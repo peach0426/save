@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DK 追星理財大滿貫 ⚔️💎</title>
+    <title>追星理财大滿貫 ⚔️💎</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
     <style>
@@ -11,31 +11,39 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'ZCOOL KuaiLe', cursive; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--cream); color: var(--text); overflow: hidden; position: fixed; }
         
+        /* 顶部汇率 */
         .app-header { padding: 45px 20px 20px; background: white; border-radius: 0 0 40px 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); z-index: 100; position: relative; }
         .app-header h1 { font-size: 18px; margin: 0; color: var(--serenity); display: flex; align-items: center; justify-content: space-between; }
         
+        /* 页面滚动区域 */
         .content-container { height: calc(100vh - 180px); overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
         .card-white { background: white; padding: 20px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        
+        /* 记录卡片 */
         .item-card { background: white; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-radius: 20px; border-left: 8px solid var(--serenity); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         .item-card.is-spend { border-left-color: var(--rose); }
 
+        /* 挑战进度条与提示 */
         .daily-hint { background: linear-gradient(135deg, var(--rose), #ffdfdf); color: #6d4c41; padding: 18px; border-radius: 20px; margin-top: 15px; border: 1px solid #ffcfcf; }
-        .progress-bg { background: #eee; height: 18px; border-radius: 10px; margin: 12px 0; overflow: hidden; }
+        .progress-bg { background: #eee; height: 18px; border-radius: 10px; margin: 12px 0; overflow: hidden; border: 1px solid #ddd; }
         .progress-fill { background: linear-gradient(90deg, var(--serenity), var(--rose)); height: 100%; width: 0%; transition: 0.8s; }
 
+        /* 底部导航 */
         .footer-nav { position: fixed; bottom: 0; width: 100%; height: 85px; background: white; display: flex; border-radius: 30px 30px 0 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); padding-bottom: env(safe-area-inset-bottom); }
         .nav-link { flex: 1; text-align: center; padding-top: 15px; color: #CFD8DC; font-size: 12px; }
         .nav-link.active { color: var(--serenity); font-weight: bold; }
         .nav-link i { font-size: 24px; display: block; margin-bottom: 4px; font-style: normal; }
 
+        /* 悬浮新增按钮 */
         .add-btn { position: fixed; bottom: 100px; right: 25px; width: 65px; height: 65px; background: linear-gradient(135deg, var(--serenity), var(--rose)); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 35px; box-shadow: 0 8px 15px rgba(146,168,209,0.4); z-index: 500; }
 
+        /* 弹窗与标签 */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(5px); }
         .modal-con { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 35px 35px 0 0; padding: 25px; max-height: 90vh; overflow-y: auto; }
         .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-        .tag { padding: 8px 15px; background: #F5F7F9; border-radius: 12px; font-size: 13px; color: #78909C; border: 1px solid transparent; }
-        .tag.sel-s { background: var(--serenity) !important; color: white !important; border-color: #7d93be; }
-        .tag.sel-p { background: var(--rose) !important; color: white !important; border-color: #e5b4b3; }
+        .tag { padding: 8px 15px; background: #F5F7F9; border-radius: 12px; font-size: 13px; color: #78909C; }
+        .tag.sel-s { background: var(--serenity) !important; color: white !important; }
+        .tag.sel-p { background: var(--rose) !important; color: white !important; }
 
         input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 15px; border: 1.5px solid #F0F0F0; background: #F9FBFF; font-size: 15px; outline: none; }
         .btn-action { width: 100%; padding: 16px; border: none; border-radius: 18px; font-weight: bold; color: white; font-size: 16px; margin-top: 10px; }
@@ -45,47 +53,47 @@
 <body>
 
 <div class="app-header">
-    <h1>DK 理財挑戰 ⚔️ <span id="rate-display">1 RM = ... ₩</span></h1>
+    <h1>DK 理财挑战 ⚔️ <span id="rate-display">1 RM = ... ₩</span></h1>
 </div>
 
 <div class="content-container">
     <div id="p-chal" class="page">
         <div class="card-white" id="chal-setup">
-            <h3 style="margin-top:0">🎯 設定儲蓄週期</h3>
-            <small>目標金額 (RM)</small>
-            <input type="number" id="target-amt" placeholder="0.00">
-            <small>起止日期</small>
-            <div style="display:flex; gap:10px;">
-                <input type="date" id="start-date">
-                <input type="date" id="end-date">
-            </div>
-            <button class="btn-action" style="background:var(--serenity)" onclick="startChal()">挑戰開始 ⚔️</button>
+            <h3 style="margin-top:0">🎯 开启一周存钱挑战</h3>
+            <p style="font-size:13px; color:#999;">系统将自动从今天起算 7 天的存钱计划</p>
+            <small>本周目标总额 (RM)</small>
+            <input type="number" id="target-amt" placeholder="例如: 700">
+            <button class="btn-action" style="background:var(--serenity)" onclick="startChal()">挑战开始 ⚔️</button>
         </div>
 
         <div class="card-white" id="chal-active" style="display:none">
-            <h3 style="margin:0">⚔️ 挑戰中...</h3>
+            <h3 style="margin:0">⚔️ 一周挑战进行中</h3>
+            <div id="chal-dates" style="font-size:12px; color:#999; margin:5px 0;"></div>
+            
             <div class="progress-bg"><div id="progress-bar" class="progress-fill"></div></div>
-            <center><b id="progress-text">0%</b></center>
+            <center><b id="progress-text">0% (RM 0 / 0)</b></center>
+            
             <div class="daily-hint">
                 <center>
-                    <small>距離挑戰結束還剩 <span id="days-left">-</span> 天</small><br>
-                    <span style="font-size:18px;">今日應存：<b id="daily-amt">RM 0.00</b></span>
+                    <small>距离本周挑战结束还剩 <span id="days-left">-</span> 天</small><br>
+                    <span style="font-size:18px;">今日建议存储：<b id="daily-amt">RM 0.00</b></span>
                 </center>
             </div>
-            <button class="btn-action" style="background:#eee; color:#999; margin-top:20px;" onclick="cancelChal()">取消並重新設定</button>
+            <button class="btn-action" style="background:#eee; color:#999; margin-top:20px;" onclick="cancelChal()">取消挑战</button>
         </div>
     </div>
 
     <div id="p-home" class="page" style="display:none">
+        <h3 style="margin-left:5px;">🌻 储蓄与支出历史</h3>
         <div id="list-render"></div>
     </div>
 
     <div id="p-set" class="page" style="display:none">
         <div class="card-white">
-            <button class="btn-action" style="background:#81C784" onclick="doExport()">📤 導出 Excel 備份</button>
-            <button class="btn-action" style="background:#B0BEC5; margin-top:15px;" onclick="document.getElementById('f-in').click()">📥 導入數據回補</button>
+            <button class="btn-action" style="background:#81C784" onclick="doExport()">📤 导出 Excel 备份</button>
+            <button class="btn-action" style="background:#B0BEC5; margin-top:15px;" onclick="document.getElementById('f-in').click()">📥 导入数据恢复</button>
             <input type="file" id="f-in" style="display:none" onchange="doImport(this)">
-            <button class="btn-action" style="background:var(--rose); margin-top:40px;" onclick="clearAll()">🗑️ 清空所有本地紀錄</button>
+            <button class="btn-action" style="background:var(--rose); margin-top:40px;" onclick="clearAll()">🗑️ 清空所有记录</button>
         </div>
     </div>
 </div>
@@ -93,42 +101,42 @@
 <div class="add-btn" onclick="openAdd()">+</div>
 
 <div class="footer-nav">
-    <div class="nav-link active" onclick="navTo('chal', this)"><i>🏆</i>挑戰</div>
-    <div class="nav-link" onclick="navTo('home', this)"><i>🌻</i>清單</div>
-    <div class="nav-link" onclick="navTo('set', this)"><i>⚙️</i>設定</div>
+    <div class="nav-link active" onclick="navTo('chal', this)"><i>🏆</i>挑战</div>
+    <div class="nav-link" onclick="navTo('home', this)"><i>🌻</i>记录</div>
+    <div class="nav-link" onclick="navTo('set', this)"><i>⚙️</i>设置</div>
 </div>
 
 <div class="modal" id="modal-add">
     <div class="modal-con">
         <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <button id="ts" class="btn-action" style="background:var(--serenity); flex:1" onclick="setT('save')">儲蓄</button>
+            <button id="ts" class="btn-action" style="background:var(--serenity); flex:1" onclick="setT('save')">储蓄</button>
             <button id="tp" class="btn-action" style="background:#eee; color:#999; flex:1" onclick="setT('spend')">支出</button>
         </div>
         <input type="date" id="f-date">
-        <small>帳戶</small><div id="bx-acc" class="tag-row"></div>
-        <small>分類</small><div id="bx-tag" class="tag-row"></div>
+        <small>账户</small><div id="bx-acc" class="tag-row"></div>
+        <small>分类</small><div id="bx-tag" class="tag-row"></div>
         
         <div id="row-spend" style="display:none">
-            <small>網購狀態</small><div id="bx-order" class="tag-row"></div>
-            <small>購買來源</small><input type="text" id="f-source" placeholder="例如: Weverse / 官網">
+            <small>网购状态</small><div id="bx-order" class="tag-row"></div>
+            <small>购买来源</small><input type="text" id="f-source" placeholder="例如: Weverse / 淘宝">
         </div>
 
-        <small>金額 (RM)</small><input type="number" id="f-amt">
-        <small>備註 / 商品名</small><input type="text" id="f-note">
+        <small>金额 (RM)</small><input type="number" id="f-amt">
+        <small>备注 / 商品名</small><input type="text" id="f-note">
         
-        <button class="btn-action" style="background:var(--serenity)" onclick="saveRec()">儲存紀錄 🛡️</button>
-        <button id="btn-del" class="btn-action" style="background:#EF5350; display:none" onclick="delRec()">🗑️ 刪除此紀錄</button>
+        <button class="btn-action" style="background:var(--serenity)" onclick="saveRec()">保存记录 🛡️</button>
+        <button id="btn-del" class="btn-action" style="background:#EF5350; display:none" onclick="delRec()">🗑️ 删除此记录</button>
         <center><button onclick="closeAdd()" style="border:none;background:none;color:#999;padding:15px;">取消</button></center>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('dk_final_v2025')) || { list: [], challenge: null };
+    let db = JSON.parse(localStorage.getItem('dk_v_locked_cn')) || { list: [], challenge: null };
     const CFG = {
         acc: ['RHB', 'HLB', 'TNG'],
-        save: ['⚔️ 碩珉存錢', '🧧 意外收入', '💰 工資'],
-        spend: ['💿 專輯', '✨ 小卡', '🎭 音樂劇', '🛍️ 同款', '📦 郵費', '🍱 飯錢'],
-        order: ['❌ 未付', '✅ 已付', '🚚 運送中', '📦 已收']
+        save: ['⚔️ 硕珉存钱', '🧧 意外收入', '💰 工资'],
+        spend: ['💿 专辑', '✨ 小卡', '🎭 音乐剧', '🛍️ 同款', '📦 邮费', '🍱 饭钱'],
+        order: ['❌ 未付', '✅ 已付', '🚚 运送中', '📦 已收']
     };
     let curT = 'save', curTag = '', curAcc = 'RHB', curOrder = '✅ 已付', editIdx = -1;
 
@@ -141,16 +149,24 @@
         if(id === 'home') renderList();
     }
 
-    // --- 挑戰邏輯 ---
+    // --- 一周挑战逻辑 (核心) ---
     function startChal() {
         const amt = parseFloat(document.getElementById('target-amt').value);
-        const s = document.getElementById('start-date').value;
-        const e = document.getElementById('end-date').value;
-        if(!amt || !s || !e) return alert("資訊不完整！");
-        db.challenge = { target: amt, start: s, end: e };
+        if(!amt) return alert("请输入本周存钱目标金额！");
+        
+        const start = new Date();
+        const end = new Date();
+        end.setDate(start.getDate() + 6); // 自动计算7天
+
+        db.challenge = { 
+            target: amt, 
+            start: start.toISOString().slice(0,10), 
+            end: end.toISOString().slice(0,10) 
+        };
         save(); updateChalUI();
     }
-    function cancelChal() { if(confirm("確定取消挑戰？")) { db.challenge = null; save(); updateChalUI(); } }
+
+    function cancelChal() { if(confirm("确定取消本周挑战吗？")) { db.challenge = null; save(); updateChalUI(); } }
     
     function updateChalUI() {
         if(!db.challenge) {
@@ -160,20 +176,27 @@
         }
         document.getElementById('chal-setup').style.display='none';
         document.getElementById('chal-active').style.display='block';
+        
         const c = db.challenge;
         const today = new Date(); today.setHours(0,0,0,0);
         const endD = new Date(c.end);
-        const daysLeft = Math.ceil((endD - today) / (1000*60*60*24));
+        const diff = Math.ceil((endD - today) / (1000*60*60*24)) + 1;
+        const daysLeft = Math.max(0, diff);
+        
         const saved = db.list.filter(i => i.type === 'save' && i.date >= c.start && i.date <= c.end).reduce((a,b)=>a+b.amt, 0);
         const perc = Math.min((saved/c.target)*100, 100);
+        
+        document.getElementById('chal-dates').innerText = `周期：${c.start} 至 ${c.end}`;
         document.getElementById('progress-bar').style.width = perc + '%';
         document.getElementById('progress-text').innerText = `${perc.toFixed(1)}% (RM ${saved.toFixed(2)} / ${c.target})`;
-        document.getElementById('days-left').innerText = Math.max(0, daysLeft);
+        document.getElementById('days-left').innerText = daysLeft;
+        
+        // 自动计算今日建议应存金额
         const daily = (daysLeft > 0) ? (Math.max(c.target - saved, 0) / daysLeft) : 0;
         document.getElementById('daily-amt').innerText = `RM ${daily.toFixed(2)}`;
     }
 
-    // --- 紀錄邏輯 ---
+    // --- 记录与列表逻辑 ---
     function setT(t) {
         curT = t;
         document.getElementById('ts').style.cssText = t==='save'?'background:var(--serenity);color:white;':'background:#eee;color:#999;';
@@ -201,15 +224,15 @@
     }
     function saveRec() {
         const amt = parseFloat(document.getElementById('f-amt').value);
-        if(!amt || !curTag) return alert("請填寫金額與分類！");
+        if(!amt || !curTag) return alert("请填写金额与分类！");
         const data = { date: document.getElementById('f-date').value, amt, type: curT, tag: curTag, acc: curAcc, note: document.getElementById('f-note').value, order: curT==='spend'?curOrder:'', source: curT==='spend'?document.getElementById('f-source').value:'' };
         if(editIdx > -1) db.list[editIdx] = data; else db.list.unshift(data);
         save(); closeAdd(); renderList(); updateChalUI();
     }
-    function delRec() { if(confirm("確定刪除？")) { db.list.splice(editIdx,1); save(); closeAdd(); renderList(); updateChalUI(); } }
+    function delRec() { if(confirm("确定删除？")) { db.list.splice(editIdx,1); save(); closeAdd(); renderList(); updateChalUI(); } }
     function closeAdd() { document.getElementById('modal-add').style.display='none'; }
     function renderList() {
-        document.getElementById('list-render').innerHTML = db.list.map((i, idx) => `
+        document.getElementById('list-render').innerHTML = db.list.length === 0 ? '<center style="color:#ccc;margin-top:20px;">暂无历史记录</center>' : db.list.map((i, idx) => `
             <div class="item-card ${i.type==='spend'?'is-spend':''}" onclick="openEdit(${idx})">
                 <div style="flex:1"><b>${i.tag}</b><br><small>${i.date} | ${i.acc}</small><br>
                 ${i.order?`<span class="status-label">${i.order}</span>`:''} ${i.source?`<small style="color:#999">[${i.source}]</small>`:''}</div>
@@ -218,14 +241,15 @@
     }
 
     // --- 工具 ---
-    function save() { localStorage.setItem('dk_final_v2025', JSON.stringify(db)); }
-    function doExport() { const ws = XLSX.utils.json_to_sheet(db.list); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "DK_DATA"); XLSX.writeFile(wb, "DK_Backup.xlsx"); }
+    function save() { localStorage.setItem('dk_v_locked_cn', JSON.stringify(db)); }
+    function doExport() { const ws = XLSX.utils.json_to_sheet(db.list); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Records"); XLSX.writeFile(wb, "DK_Backup.xlsx"); }
     function doImport(f) { const r = new FileReader(); r.onload = (e) => { const d = new Uint8Array(e.target.result); const wb = XLSX.read(d, {type:'array'}); db.list = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]); save(); location.reload(); }; r.readAsArrayBuffer(f.files[0]); }
-    function clearAll() { if(confirm("確定刪除所有本地紀錄？這不可撤銷。")) { localStorage.clear(); location.reload(); } }
+    function clearAll() { if(confirm("警告：数据将被永久删除！")) { localStorage.clear(); location.reload(); } }
 
     fetch('https://api.exchangerate-api.com/v4/latest/MYR').then(r=>r.json()).then(d=>document.getElementById('rate-display').innerText=`1 RM = ${d.rates.KRW.toFixed(0)} ₩`);
-    document.getElementById('start-date').value = new Date().toISOString().slice(0,10);
+    
     updateChalUI();
+    renderList();
 </script>
 </body>
 </html>
