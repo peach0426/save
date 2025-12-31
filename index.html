@@ -13,158 +13,129 @@
         * { 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
-            outline: none;
-            font-family: 'ZCOOL KuaiLe', cursive; /* 全局套用可愛字體 */
+            font-family: 'ZCOOL KuaiLe', cursive; /* 全局可愛字體 */
         }
 
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--cream); color: var(--text); overflow: hidden; }
         
-        /* 標題欄 - 圓潤波浪感 */
+        /* 標題欄 - 波浪形底部 */
         .app-header { 
             padding: 55px 25px 25px; background: white; 
-            border-radius: 0 0 50% 50% / 0 0 20px 20px; 
+            border-radius: 0 0 60px 20px; 
             display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 8px 30px rgba(0,0,0,0.05); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); 
         }
-        .app-header h1 { font-size: 24px; margin: 0; color: var(--serenity); letter-spacing: 1px; }
-        
-        /* 內容區 */
-        .content-container { height: calc(100% - 185px); overflow-y: auto; padding: 20px; }
-        .page { display: none; } .page.active { display: block; animation: bounceIn 0.4s ease; }
-        @keyframes bounceIn { 0% { transform: scale(0.9); } 70% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* 有機形狀卡片 (非圓角方格，而是像雲朵或泡泡) */
+        /* 有機形狀卡片 (雲朵感) */
         .card-white { 
-            background: white; 
-            padding: 25px; 
-            margin-bottom: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
-            border-radius: 60px 30px 70px 40px; /* 四角不對稱，創造可愛感 */
-            border: 3px solid #FDFEFE;
+            background: white; padding: 25px; margin-bottom: 20px;
+            border-radius: 50px 20px 60px 30px; /* 不規則弧度 */
         }
 
         .item-card { 
-            background: white; 
-            padding: 20px; 
-            margin-bottom: 15px; 
+            background: white; padding: 20px; margin-bottom: 12px; 
             display: flex; align-items: center; gap: 12px;
-            border-radius: 30px 50px 20px 40px;
+            border-radius: 30px 15px 40px 20px;
             border-left: 10px solid var(--serenity);
-            transition: 0.2s;
         }
-        .item-card.is-spend { border-left-color: var(--rose); border-radius: 50px 30px 40px 20px; }
+        .item-card.is-spend { border-left-color: var(--rose); border-radius: 15px 40px 20px 30px; }
 
-        /* 底部導航 - 橢圓泡泡感 */
+        /* 底部導航 - 圓潤泡泡 */
         .footer-nav { 
             position: fixed; bottom: 0; width: 100%; height: 95px; 
             background: white; display: flex; align-items: center; 
-            border-radius: 40px 40px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
+            border-radius: 40px 40px 0 0; 
         }
-        .nav-link { flex: 1; text-align: center; color: #D1D5DB; font-size: 13px; font-weight: bold; }
-        .nav-link.active { color: var(--serenity); transform: scale(1.1); }
-        .nav-link i { font-size: 26px; display: block; margin-bottom: 2px; font-style: normal; }
+        .nav-link.active { color: var(--serenity); transform: translateY(-5px); transition: 0.3s; }
 
-        /* 新增按鈕 - 像顆珍珠 */
+        /* 水滴形按鈕 */
         .add-btn { 
             position: fixed; bottom: 110px; right: 25px; width: 70px; height: 70px; 
             background: linear-gradient(135deg, var(--serenity), var(--rose)); 
-            border-radius: 35% 65% 65% 35% / 44% 42% 58% 56%; /* 不規則圓形 */
+            border-radius: 40% 60% 40% 60% / 60% 40% 60% 40%; 
             color: white; display: flex; align-items: center; justify-content: center; 
-            font-size: 40px; box-shadow: 0 10px 25px rgba(146,168,209,0.4); z-index: 100; 
+            font-size: 40px; z-index: 100; 
         }
         
         /* 彈窗 */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(146,168,209,0.2); z-index: 1000; backdrop-filter: blur(10px); }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(146,168,209,0.3); z-index: 1000; backdrop-filter: blur(8px); }
         .modal-con { 
             position: absolute; bottom: 0; width: 100%; background: white; 
-            border-radius: 50px 50px 0 0; padding: 35px; max-height: 90vh; overflow-y: auto; 
+            border-radius: 50px 50px 0 0; padding: 35px; max-height: 92vh; overflow-y: auto; 
             border-top: 15px solid var(--serenity); 
         }
         
-        /* 標籤 - 膠囊與泡泡 */
-        .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 25px; }
+        /* 標籤 - 橢圓膠囊 */
+        .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 20px; }
         .tag { 
-            padding: 12px 18px; background: #F3F4F6; border-radius: 25px; 
-            font-size: 13px; color: #777; cursor: pointer; transition: 0.3s;
-            border: 2px solid transparent;
+            padding: 10px 18px; background: #F3F4F6; border-radius: 20px 10px 20px 10px; 
+            font-size: 13px; color: #777; cursor: pointer; transition: 0.2s;
         }
-        .tag.sel-save { background: var(--serenity) !important; color: white !important; transform: rotate(-2deg); }
-        .tag.sel-spend { background: var(--rose) !important; color: white !important; transform: rotate(2deg); }
+        /* 點擊後的顏色感應 */
+        .tag.selected-save { background: var(--serenity) !important; color: white !important; transform: scale(1.05); }
+        .tag.selected-spend { background: var(--rose) !important; color: white !important; transform: scale(1.05); }
 
         input { 
-            width: 100%; padding: 18px; margin-bottom: 15px; border-radius: 25px; 
-            background: #F8FBFF; border: 2px solid #EBF2F9; font-size: 16px; color: var(--text);
+            width: 100%; padding: 18px; margin-bottom: 15px; border-radius: 20px 10px; 
+            background: #F8FBFF; border: 2px solid #EBF2F9; font-size: 16px; 
         }
         .btn-action { 
             width: 100%; padding: 20px; border: none; border-radius: 30px; 
-            font-weight: bold; color: white; font-size: 18px; letter-spacing: 2px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            font-weight: bold; color: white; font-size: 18px; 
         }
-        
-        .progress-container { width: 100%; height: 18px; background: #EEE; border-radius: 50px; overflow: hidden; margin: 20px 0; }
-        .progress-fill { height: 100%; width: 0%; background: var(--serenity); border-radius: 50px; }
-        .day-box { background: white; border-radius: 20px; padding: 12px 0; border: 2px solid #F0F4F8; }
-        .day-box.done { background: var(--serenity); color: white; border-color: var(--serenity); transform: scale(1.1); }
 
-        .order-tag { font-size: 11px; background: #F0F2F5; color: #888; padding: 4px 10px; border-radius: 15px; margin-right: 5px; }
-        .source-tag { font-size: 11px; background: #EBF5FB; color: var(--serenity); padding: 4px 10px; border-radius: 15px; }
+        .day-box { background: white; border-radius: 15px 5px; border: 2px solid #EEE; text-align: center; padding: 10px 0; }
+        .day-box.done { background: var(--serenity); color: white; border-color: var(--serenity); }
+
+        .order-tag, .source-tag { font-size: 11px; padding: 4px 10px; border-radius: 12px; margin-right: 5px; }
+        .order-tag { background: #F0F2F5; color: #888; }
+        .source-tag { background: #EBF5FB; color: var(--serenity); }
     </style>
 </head>
 <body>
 
 <div class="app-header">
     <h1 id="page-title">消費清單 🐴💎</h1>
-    <div id="exchange-rate" style="font-size: 13px; color: var(--serenity);">載入中..</div>
+    <div id="exchange-rate" style="font-size: 13px; color: var(--serenity);">1 RM = ...</div>
 </div>
 
 <div class="content-container">
     <div id="p-home" class="page active">
         <div class="card-white" style="display:flex; justify-content:space-around; text-align:center;">
-            <div><small style="color:#AAB;">💎 存起來</small><br><b id="mo-save" style="color:var(--serenity); font-size:22px;">RM 0.00</b></div>
-            <div><small style="color:#AAB;">🌸 花掉的</small><br><b id="mo-spend" style="color:var(--rose); font-size:22px;">RM 0.00</b></div>
+            <div><small>💎 儲蓄</small><br><b id="mo-save" style="color:var(--serenity); font-size:22px;">RM 0</b></div>
+            <div><small>🌸 支出</small><br><b id="mo-spend" style="color:var(--rose); font-size:22px;">RM 0</b></div>
         </div>
         <div id="list-render"></div>
     </div>
     
-    <div id="p-chal" class="page">
+    <div id="p-chal" class="page" style="display:none">
         <div class="card-white" id="chal-form">
-            <h3 style="color:var(--serenity); font-size:22px;">🎯 一周挑戰計數</h3>
-            <small>這周目標存多少 (RM)？</small>
-            <input type="number" id="chal-val" placeholder="輸入數字..">
-            <p id="chal-calc-hint" style="font-size:14px; color:#999;"></p>
-            <button class="btn-action" style="background:var(--serenity)" onclick="initChal()">⚔️ 開始挑戰GO!</button>
+            <h3 style="color:var(--serenity);">🎯 挑戰本周目標</h3>
+            <input type="number" id="chal-val" placeholder="想存多少？">
+            <button class="btn-action" style="background:var(--serenity)" onclick="initChal()">⚔️ 開始挑戰</button>
         </div>
         <div class="card-white" id="chal-status" style="display:none">
-            <h3 style="color:var(--serenity); margin:0;">🏆 努力存錢中</h3>
-            <div id="daily-target" style="margin:10px 0; font-size:14px;"></div>
-            <div class="progress-container"><div id="chal-bar" class="progress-fill"></div></div>
-            <div id="chal-grid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; margin-bottom:20px;"></div>
-            <button class="btn-action" style="background:#EEE; color:#AAA; box-shadow:none;" onclick="cancelChal()">取消挑戰</button>
-        </div>
-        <div class="card-white" style="text-align:center;">
-            <small>克拉等級</small>
-            <h2 id="rank-display" style="color:var(--serenity); margin:5px 0; font-size:26px;">追星實習生 🐥</h2>
+            <div id="chal-grid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px;"></div>
+            <button class="btn-action" style="background:#EEE; color:#AAA; margin-top:15px;" onclick="cancelChal()">放棄</button>
         </div>
     </div>
 
-    <div id="p-report" class="page">
+    <div id="p-report" class="page" style="display:none">
         <div class="card-white">
-            <div style="display:flex; justify-content:center; align-items:center; gap:30px; margin-bottom:20px;">
-                <button onclick="navMonth(-1)" style="border:none;background:none;font-size:25px;">🍭</button>
-                <b id="report-date-label" style="font-size:20px;"></b>
-                <button onclick="navMonth(1)" style="border:none;background:none;font-size:25px;">🍩</button>
+            <div style="display:flex; justify-content:center; align-items:center; gap:20px; margin-bottom:15px;">
+                <button onclick="navMonth(-1)" style="border:none;background:none;font-size:20px;">⬅️</button>
+                <b id="report-date-label"></b>
+                <button onclick="navMonth(1)" style="border:none;background:none;font-size:20px;">➡️</button>
             </div>
             <canvas id="dkChart"></canvas>
-            <div id="report-details" style="margin-top:25px; text-align:center; line-height:2.5;"></div>
+            <div id="report-details" style="text-align:center; margin-top:20px;"></div>
         </div>
     </div>
 
-    <div id="p-set" class="page">
+    <div id="p-set" class="page" style="display:none">
         <div class="card-white">
-            <button class="btn-action" style="background:#A2D9CE" onclick="doExport()">📤 導出數據 (Excel)</button>
-            <button class="btn-action" style="background:#D5D8DC; margin:15px 0;" onclick="document.getElementById('file-in').click()">📥 導入數據</button>
-            <input type="file" id="file-in" style="display:none" onchange="doImport(this)">
-            <button class="btn-action" style="background:var(--rose)" onclick="clearAllData()">🗑️ 重置所有資料</button>
+            <button class="btn-action" style="background:#A2D9CE" onclick="doExport()">📤 導出 Excel</button>
+            <button class="btn-action" style="background:var(--rose); margin-top:15px;" onclick="clearAllData()">🗑️ 清空所有數據</button>
         </div>
     </div>
 </div>
@@ -180,35 +151,33 @@
 
 <div class="modal" id="modal-add">
     <div class="modal-con" id="modal-c">
-        <div style="display:flex; background:#F1F5F9; border-radius:25px; padding:5px; margin-bottom:25px;">
-            <button id="tab-s" style="flex:1; padding:15px; border:none; border-radius:20px; font-weight:bold; background:var(--serenity); color:white;" onclick="setType('save')">💎 儲蓄</button>
-            <button id="tab-p" style="flex:1; padding:15px; border:none; border-radius:20px; font-weight:bold; background:none; color:#999;" onclick="setType('spend')">🌸 支出</button>
+        <div style="display:flex; background:#F1F5F9; border-radius:25px; padding:5px; margin-bottom:20px;">
+            <button id="tab-s" style="flex:1; padding:15px; border:none; border-radius:20px; background:var(--serenity); color:white; font-weight:bold;" onclick="setType('save')">💎 儲蓄</button>
+            <button id="tab-p" style="flex:1; padding:15px; border:none; border-radius:20px; background:none; color:#999;" onclick="setType('spend')">🌸 支出</button>
         </div>
         
         <small>📅 日期</small><input type="date" id="fd-date">
-        <small>🏦 哪本存摺</small><div id="bx-acc" class="tag-row"></div>
+        <small>🏦 帳戶</small><div id="bx-acc" class="tag-row"></div>
         <small id="lb-tag">💎 類別</small><div id="bx-tag" class="tag-row"></div>
         
         <div id="row-order" style="display:none">
             <small>📦 網購狀態</small><div id="bx-order" class="tag-row"></div>
         </div>
 
-        <small>💰 多少錢 (RM)</small><input type="number" id="fd-amt" placeholder="0.00">
+        <small>💰 金額 (RM)</small><input type="number" id="fd-amt" placeholder="0.00">
         
-        <div id="note-section">
-            <small id="lb-note1">🏷️ 商品名稱</small><input type="text" id="fd-note" placeholder="寫點什麼..">
-            <div id="row-source">
-                <small>🛍️ 購買來源</small><input type="text" id="fd-source" placeholder="在哪裡買的..">
-            </div>
+        <small id="lb-note">🏷️ 儲蓄備註</small><input type="text" id="fd-note" placeholder="寫點什麼..">
+        <div id="row-source" style="display:none">
+            <small>🛍️ 購買來源</small><input type="text" id="fd-source" placeholder="例如: Weverse">
         </div>
         
         <button id="btn-save" class="btn-action" style="background:var(--serenity)" onclick="submitRecord()">寫好啦 ⚔️</button>
-        <center><button onclick="closeAdd()" style="border:none;background:none;color:#BBB;margin-top:20px;font-weight:bold;">下次再寫</button></center>
+        <center><button onclick="closeAdd()" style="border:none;background:none;color:#BBB;margin-top:20px;">取消</button></center>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('dk_kawaii_v1')) || { list: [], challenge: { on: false, target: 0 } };
+    let db = JSON.parse(localStorage.getItem('dk_final_fixed')) || { list: [], challenge: { on: false, target: 0 } };
     const CONFIG = {
         acc: ['RHB', 'HLB', 'TNG'],
         save: ['⚔️ 碩珉存錢', '🧧 意外收入'],
@@ -219,8 +188,8 @@
     let curT = 'save', curA = 'RHB', curTag = '', curO = '✅ 已付款', viewM = new Date().toISOString().slice(0, 7), chartObj = null;
 
     function navTo(id, title, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('p-' + id).classList.add('active');
+        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+        document.getElementById('p-' + id).style.display = 'block';
         document.getElementById('page-title').innerText = title;
         document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
@@ -235,57 +204,54 @@
         const ts = document.getElementById('tab-s');
         const tp = document.getElementById('tab-p');
         const rowSource = document.getElementById('row-source');
-        const lbNote1 = document.getElementById('lb-note1');
+        const lbNote = document.getElementById('lb-note');
+        const lbTag = document.getElementById('lb-tag');
 
         if(type === 'save') {
             mc.style.borderColor = 'var(--serenity)'; btn.style.background = 'var(--serenity)';
             ts.style.background = 'var(--serenity)'; ts.style.color = 'white'; tp.style.background = 'none'; tp.style.color = '#999';
-            document.getElementById('lb-tag').innerText = '💎 存錢類別';
+            lbTag.innerText = '💎 儲蓄類別'; lbNote.innerText = '🏷️ 儲蓄備註';
+            rowSource.style.display = 'none'; // 儲蓄隱藏雙備註
             document.getElementById('row-order').style.display = 'none';
-            lbNote1.innerText = "🏷️ 存錢備註";
-            rowSource.style.display = 'none'; // 儲蓄時隱藏第二個備註
-            renderTagGrid('bx-tag', CONFIG.save, 'sel-save');
+            renderTags('bx-tag', CONFIG.save, 'selected-save');
         } else {
             mc.style.borderColor = 'var(--rose)'; btn.style.background = 'var(--rose)';
             tp.style.background = 'var(--rose)'; tp.style.color = 'white'; ts.style.background = 'none'; ts.style.color = '#999';
-            document.getElementById('lb-tag').innerText = '🌸 支出類別';
+            lbTag.innerText = '🌸 支出類別'; lbNote.innerText = '🏷️ 商品名稱';
+            rowSource.style.display = 'block'; // 支出顯示雙備註
             document.getElementById('row-order').style.display = 'block';
-            lbNote1.innerText = "🏷️ 商品名稱";
-            rowSource.style.display = 'block'; // 支出時顯示兩個備註
-            renderTagGrid('bx-tag', CONFIG.spend, 'sel-spend');
-            renderTagGrid('bx-order', CONFIG.order, 'sel-spend', 'order');
+            renderTags('bx-tag', CONFIG.spend, 'selected-spend');
+            renderTags('bx-order', CONFIG.order, 'selected-spend', 'order');
         }
-        renderTagGrid('bx-acc', CONFIG.acc, type === 'save' ? 'sel-save' : 'sel-spend', 'acc');
+        renderTags('bx-acc', CONFIG.acc, type === 'save' ? 'selected-save' : 'selected-spend', 'acc');
     }
 
-    function renderTagGrid(containerId, dataArr, activeClass, type) {
-        document.getElementById(containerId).innerHTML = dataArr.map(item => {
-            let isActive = (type === 'acc' ? curA === item : (type === 'order' ? curO === item : curTag === item));
-            return `<div class="tag ${isActive ? activeClass : ''}" onclick="selectTag('${item}', '${type}', '${containerId}', '${activeClass}')">${item}</div>`;
+    function renderTags(cid, arr, cls, type) {
+        document.getElementById(cid).innerHTML = arr.map(v => {
+            let active = (type==='acc'? curA===v : (type==='order'? curO===v : curTag===v));
+            return `<div class="tag ${active?cls:''}" onclick="selTag('${v}','${type}','${cid}','${cls}')">${v}</div>`;
         }).join('');
     }
 
-    function selectTag(val, type, cid, activeClass) {
-        if(type === 'acc') curA = val; else if(type === 'order') curO = val; else curTag = val;
-        let arr = (cid === 'bx-acc') ? CONFIG.acc : (cid === 'bx-order' ? CONFIG.order : (curT === 'save' ? CONFIG.save : CONFIG.spend));
-        renderTagGrid(cid, arr, activeClass, type);
+    function selTag(v, type, cid, cls) {
+        if(type==='acc') curA=v; else if(type==='order') curO=v; else curTag=v;
+        let arr = (cid==='bx-acc'? CONFIG.acc : (cid==='bx-order'? CONFIG.order : (curT==='save'? CONFIG.save : CONFIG.spend)));
+        renderTags(cid, arr, cls, type);
     }
 
-    function openAdd() { document.getElementById('modal-add').style.display = 'block'; setType('save'); }
-    function closeAdd() { document.getElementById('modal-add').style.display = 'none'; }
+    function openAdd() { document.getElementById('modal-add').style.display='block'; document.getElementById('fd-date').value=new Date().toISOString().slice(0,10); setType('save'); }
+    function closeAdd() { document.getElementById('modal-add').style.display='none'; }
 
     function submitRecord() {
         const amt = parseFloat(document.getElementById('fd-amt').value);
-        if(!amt || !curTag) return alert("還沒寫完喔~ 💎");
+        if(!amt || !curTag) return alert("還沒填完喔！");
         db.list.unshift({
-            date: document.getElementById('fd-date').value,
-            amt: amt, type: curT, tag: curTag, acc: curA,
-            order: curT==='spend'?curO:'',
-            note: document.getElementById('fd-note').value,
+            date: document.getElementById('fd-date').value, amt: amt, type: curT, tag: curTag, acc: curA,
+            order: curT==='spend'?curO:'', note: document.getElementById('fd-note').value,
             source: curT==='spend'?document.getElementById('fd-source').value : ''
         });
         saveData(); renderHome(); closeAdd();
-        document.getElementById('fd-amt').value = ''; document.getElementById('fd-note').value = '';
+        document.getElementById('fd-amt').value=''; document.getElementById('fd-note').value=''; document.getElementById('fd-source').value='';
     }
 
     function renderHome() {
@@ -297,58 +263,14 @@
         document.getElementById('list-render').innerHTML = db.list.map((i, idx) => `
             <div class="item-card ${i.type==='spend'?'is-spend':''}" onclick="delItem(${idx})">
                 <div style="flex:1">
-                    <b style="display:block; font-size:16px;">${i.note || i.tag}</b>
+                    <b>${i.note || i.tag}</b>
                     <div style="margin-top:5px;">
-                        ${i.order ? `<span class="order-tag">${i.order}</span>` : ''}
-                        ${i.source ? `<span class="source-tag">${i.source}</span>` : ''}
-                        <small style="color:#BBB; font-size:11px;">${i.date}</small>
+                        ${i.order?`<span class="order-tag">${i.order}</span>`:''}${i.source?`<span class="source-tag">${i.source}</span>`:''}
+                        <small style="color:#BBB;">${i.date}</small>
                     </div>
                 </div>
-                <div style="text-align:right">
-                    <b style="color:${i.type==='save'?'var(--serenity)':'var(--rose)'}; font-size:18px;">${i.type==='save'?'+':'-'} ${i.amt.toFixed(2)}</b>
-                </div>
+                <div style="text-align:right"><b style="color:${i.type==='save'?'var(--serenity)':'var(--rose)'}">${i.type==='save'?'+':'-'} ${i.amt.toFixed(2)}</b></div>
             </div>`).join('');
-        updateRank();
-    }
-
-    document.getElementById('chal-val').oninput = function() {
-        document.getElementById('chal-calc-hint').innerText = this.value ? `平均每天要存: RM ${(this.value/7).toFixed(2)} 🥛` : '';
-    };
-
-    function initChal() {
-        const val = parseFloat(document.getElementById('chal-val').value);
-        if(!val) return;
-        db.challenge = { on: true, target: val, start: new Date().toISOString().slice(0, 10) };
-        saveData(); renderChal();
-    }
-
-    function cancelChal() { if(confirm("取消挑戰進度會不見哦?")) { db.challenge = { on: false }; saveData(); renderChal(); } }
-
-    function renderChal() {
-        if(!db.challenge.on) {
-            document.getElementById('chal-form').style.display = 'block';
-            document.getElementById('chal-status').style.display = 'none';
-        } else {
-            document.getElementById('chal-form').style.display = 'none';
-            document.getElementById('chal-status').style.display = 'block';
-            document.getElementById('daily-target').innerText = `目標 RM ${db.challenge.target} | 每天加油存 RM ${(db.challenge.target/7).toFixed(2)}`;
-            const today = new Date(); const mon = new Date(today.setDate(today.getDate() - (today.getDay()||7) + 1)); mon.setHours(0,0,0,0);
-            let done = 0; let grid = '';
-            for(let i=0; i<7; i++) {
-                let d = new Date(mon); d.setDate(d.getDate()+i); let ds = d.toISOString().slice(0, 10);
-                let ok = db.list.some(x => x.date === ds && x.type === 'save'); if(ok) done++;
-                grid += `<div class="day-box ${ok?'done':''}">Day ${i+1}<br>${ok?'💎':'☁️'}</div>`;
-            }
-            document.getElementById('chal-grid').innerHTML = grid;
-            document.getElementById('chal-bar').style.width = (done/7*100) + '%';
-        }
-    }
-
-    function updateRank() {
-        const count = db.list.filter(i => i.type === 'save').length;
-        let r = "追星實習生 🐥";
-        if(count > 10) r = "稱職克拉 💎"; else if(count > 30) r = "DK的專業執事 ⚔️"; else if(count > 50) r = "DK的超級大債主 👑";
-        document.getElementById('rank-display').innerText = r;
     }
 
     function renderReport() {
@@ -356,40 +278,35 @@
         const data = db.list.filter(x => x.date.startsWith(viewM));
         const s = data.filter(x => x.type==='save').reduce((a,b)=>a+b.amt, 0);
         const p = data.filter(x => x.type==='spend').reduce((a,b)=>a+b.amt, 0);
-        document.getElementById('report-details').innerHTML = `
-            💎 儲蓄：RM ${s.toFixed(2)}<br>🌸 支出：RM ${p.toFixed(2)}<br>
-            <b style="color:var(--serenity); font-size:22px;">✨ 結餘：RM ${(s-p).toFixed(2)}</b>`;
+        document.getElementById('report-details').innerHTML = `💎 RM ${s.toFixed(2)} | 🌸 RM ${p.toFixed(2)}<br><b>結餘: RM ${(s-p).toFixed(2)}</b>`;
         if(chartObj) chartObj.destroy();
         chartObj = new Chart(document.getElementById('dkChart'), {
-            type: 'doughnut',
-            data: { labels:['儲蓄','支出'], datasets:[{ data:[s,p], backgroundColor:['#92A8D1','#F7CAC9'], borderWeight:0 }] },
-            options: { plugins: { legend: { display: false } }, cutout: '75%' }
+            type: 'doughnut', data: { labels:['儲蓄','支出'], datasets:[{ data:[s,p], backgroundColor:['#92A8D1','#F7CAC9'] }] }
         });
     }
-    function navMonth(step) { let d = new Date(viewM + "-01"); d.setMonth(d.getMonth() + step); viewM = d.toISOString().slice(0, 7); renderReport(); }
 
-    function delItem(idx) { if(confirm("要刪除這筆嗎？")) { db.list.splice(idx, 1); saveData(); renderHome(); } }
-    function saveData() { localStorage.setItem('dk_kawaii_v1', JSON.stringify(db)); }
-    function doExport() { 
-        const ws = XLSX.utils.json_to_sheet(db.list);
-        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "DK_Data");
-        XLSX.writeFile(wb, `DK_Backup.xlsx`);
+    function initChal() {
+        const v = parseFloat(document.getElementById('chal-val').value);
+        if(!v) return;
+        db.challenge = { on: true, target: v }; saveData(); renderChal();
     }
-    function doImport(f) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const data = new Uint8Array(e.target.result);
-            const wb = XLSX.read(data, {type: 'array'});
-            db.list = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-            saveData(); location.reload();
-        }; reader.readAsArrayBuffer(f.files[0]);
+    function cancelChal() { db.challenge.on=false; saveData(); renderChal(); }
+    function renderChal() {
+        if(!db.challenge.on) { document.getElementById('chal-form').style.display='block'; document.getElementById('chal-status').style.display='none'; }
+        else {
+            document.getElementById('chal-form').style.display='none'; document.getElementById('chal-status').style.display='block';
+            let grid = ''; for(let i=1; i<=7; i++) grid += `<div class="day-box">Day ${i}</div>`;
+            document.getElementById('chal-grid').innerHTML = grid;
+        }
     }
-    function clearAllData() { if(confirm("確定清空嗎？")) { localStorage.clear(); location.reload(); } }
+
+    function navMonth(step) { let d = new Date(viewM + "-01"); d.setMonth(d.getMonth() + step); viewM = d.toISOString().slice(0, 7); renderReport(); }
+    function delItem(idx) { if(confirm("刪除嗎？")) { db.list.splice(idx,1); saveData(); renderHome(); } }
+    function saveData() { localStorage.setItem('dk_final_fixed', JSON.stringify(db)); }
+    function clearAllData() { if(confirm("清空？")) { localStorage.clear(); location.reload(); } }
 
     renderHome();
-    fetch('https://api.exchangerate-api.com/v4/latest/MYR').then(r=>r.json()).then(d=>{
-        document.getElementById('exchange-rate').innerText = `1 RM = ${d.rates.KRW.toFixed(0)} ₩`;
-    });
+    fetch('https://api.exchangerate-api.com/v4/latest/MYR').then(r=>r.json()).then(d=>document.getElementById('exchange-rate').innerText=`1 RM = ${d.rates.KRW.toFixed(0)} ₩`);
 </script>
 </body>
 </html>
