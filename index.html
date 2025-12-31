@@ -3,127 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>追星記帳本</title>
+    <title>追星記帳本 Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root { --serenity: #92A8D1; --rose: #F7CAC9; --bg: #F8FBFE; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Noto Sans TC', sans-serif; }
-        
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; color: #444; }
 
-        /* 頂部標題 - 加入可愛感 */
         .app-header {
             padding: 55px 25px 20px; background: white; border-radius: 0 0 40px 40px;
             display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 4px 25px rgba(0,0,0,0.04); z-index: 100; position: relative;
         }
-        .app-header h1 { font-size: 26px; margin: 0; color: var(--serenity); font-weight: 700; letter-spacing: 1px; }
+        .app-header h1 { font-size: 24px; margin: 0; color: var(--serenity); font-weight: 700; }
         .rate-chip { background: #F1F5F9; padding: 8px 15px; border-radius: 25px; font-size: 11px; color: var(--serenity); font-weight: 700; }
 
-        /* 內容區：可滑動 */
         .content-container { height: calc(100% - 185px); overflow-y: auto; padding: 20px; scroll-behavior: smooth; }
         .page { display: none; width: 100%; }
         .page.active { display: block; animation: softFade 0.4s ease; }
         @keyframes softFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 漸層挑戰卡 (參考圖1) */
         .main-card {
             background: linear-gradient(135deg, #92A8D1 10%, #F7CAC9 90%);
-            border-radius: 40px; padding: 30px; color: white;
-            position: relative; overflow: hidden; box-shadow: 0 15px 35px rgba(146, 168, 209, 0.4);
-            margin-bottom: 25px; text-align: center;
+            border-radius: 35px; padding: 25px; color: white;
+            box-shadow: 0 15px 35px rgba(146, 168, 209, 0.4); margin-bottom: 20px;
         }
-        .main-card h3 { font-size: 14px; opacity: 0.9; font-weight: 500; margin-bottom: 8px; }
-        .main-card .amount { font-size: 40px; font-weight: 700; margin: 10px 0; }
-        .progress-bar { background: rgba(255,255,255,0.3); height: 14px; border-radius: 20px; margin: 20px 0; }
-        .progress-in { background: white; height: 100%; border-radius: 20px; transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 0%; }
-        .card-bottom { display: flex; justify-content: space-between; font-size: 12px; font-weight: 500; }
+        .card-white { background: white; border-radius: 30px; padding: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.03); margin-bottom: 15px; }
 
-        /* 搜尋框 */
-        .search-box {
-            background: white; border-radius: 25px; padding: 18px 25px;
-            color: #CCC; box-shadow: 0 5px 20px rgba(0,0,0,0.02); margin-bottom: 25px; font-size: 14px;
-        }
-
-        /* 記錄清單 (參考圖4) */
         .item-card {
-            background: white; border-radius: 30px; padding: 22px;
-            margin-bottom: 15px; display: flex; align-items: center; gap: 18px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.03);
+            background: white; border-radius: 25px; padding: 18px;
+            margin-bottom: 12px; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
         }
-        .item-icon { width: 55px; height: 55px; background: #F8FAFD; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .item-icon { width: 45px; height: 45px; background: #F8FAFD; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         .item-info { flex: 1; }
-        .item-info b { font-size: 16px; display: block; margin-bottom: 5px; color: #555; }
-        .item-info small { color: #BBB; font-size: 12px; }
-        .item-amt { text-align: right; }
-        .item-amt b { font-size: 18px; display: block; }
+        .item-info b { font-size: 15px; display: block; color: #555; }
+        .item-info small { color: #BBB; font-size: 11px; }
 
-        /* 底部導覽列 */
         .footer-nav {
-            position: fixed; bottom: 0; width: 100%; height: 95px;
+            position: fixed; bottom: 0; width: 100%; height: 90px;
             background: white; display: flex; align-items: center;
-            border-top: 1px solid #F1F5F9; padding-bottom: 20px; z-index: 200;
-            border-radius: 40px 40px 0 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.03);
+            border-top: 1px solid #F1F5F9; padding-bottom: 15px; z-index: 200;
+            border-radius: 35px 35px 0 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.03);
         }
-        .nav-link { flex: 1; text-align: center; color: #D1D5DB; font-size: 11px; font-weight: 700; transition: 0.3s; }
+        .nav-link { flex: 1; text-align: center; color: #D1D5DB; font-size: 11px; font-weight: 700; }
         .nav-link.active { color: var(--serenity); }
-        .nav-link i { font-size: 26px; display: block; margin-bottom: 6px; font-style: normal; }
+        .nav-link i { font-size: 24px; display: block; margin-bottom: 4px; font-style: normal; }
 
-        /* 浮動按鈕 */
         .add-btn {
-            position: fixed; bottom: 120px; right: 25px;
-            width: 65px; height: 65px; background: linear-gradient(135deg, var(--serenity), var(--rose));
+            position: fixed; bottom: 105px; right: 25px;
+            width: 60px; height: 60px; background: linear-gradient(135deg, var(--serenity), var(--rose));
             border-radius: 50%; color: white; display: flex; align-items: center;
-            justify-content: center; font-size: 35px; box-shadow: 0 10px 30px rgba(146, 168, 209, 0.5);
-            z-index: 150; font-weight: 300;
+            justify-content: center; font-size: 30px; box-shadow: 0 10px 25px rgba(146, 168, 209, 0.4); z-index: 150;
         }
 
-        /* 彈窗設計 */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(10px); }
-        .modal-con { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 45px 45px 0 0; padding: 40px 30px 60px; }
-        .tag-wrap { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
-        .tag { padding: 10px 20px; background: #F3F4F6; border-radius: 15px; font-size: 13px; font-weight: 700; color: #777; transition: 0.2s; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(8px); }
+        .modal-con { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 40px 40px 0 0; padding: 30px; max-height: 90vh; overflow-y: auto; }
+        .tag-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .tag { padding: 8px 16px; background: #F3F4F6; border-radius: 12px; font-size: 12px; font-weight: 700; color: #777; transition: 0.2s; }
         .tag.on { background: var(--serenity); color: white; transform: scale(1.05); }
-        input { width: 100%; padding: 20px; margin-bottom: 20px; border: 2px solid #F1F5F9; border-radius: 20px; font-size: 17px; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--serenity); }
-        .btn-go { width: 100%; padding: 20px; background: var(--serenity); color: white; border: none; border-radius: 25px; font-weight: 700; font-size: 18px; box-shadow: 0 5px 15px rgba(146, 168, 209, 0.3); }
+        .tag.account { background: #E8F0FE; color: var(--serenity); }
+        .tag.account.on { background: #4285F4; color: white; }
+        
+        input { width: 100%; padding: 15px; margin-bottom: 15px; border: 2px solid #F1F5F9; border-radius: 15px; font-size: 16px; outline: none; }
+        .btn-go { width: 100%; padding: 18px; background: var(--serenity); color: white; border: none; border-radius: 20px; font-weight: 700; font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div class="app-header">
-    <h1>追星記帳本 💎</h1>
-    <div class="rate-chip" id="rate-ui">1 RM = --- ₩</div>
+    <h1 id="page-title">消費清單 💎</h1>
+    <div class="rate-chip" id="rate-val">1 RM = --- ₩</div>
 </div>
 
 <div class="content-container">
     <div id="p-home" class="page active">
-        <div id="chal-display"></div>
-        <div class="search-box">🔍 搜尋記錄...</div>
-        <div style="display:flex; gap:15px; margin-bottom:20px;">
-            <div style="flex:1; background:white; padding:25px; border-radius:35px; text-align:center; box-shadow: 0 5px 20px rgba(0,0,0,0.02);">
-                <small style="color:#BBB">本月儲蓄</small><br><b id="mo-save" style="color:var(--serenity); font-size:22px;">RM 0</b>
-            </div>
-            <div style="flex:1; background:white; padding:25px; border-radius:35px; text-align:center; box-shadow: 0 5px 20px rgba(0,0,0,0.02);">
-                <small style="color:#BBB">本月支出</small><br><b id="mo-spend" style="color:var(--rose); font-size:22px;">RM 0</b>
+        <div class="main-card">
+            <small>ESTIMATED SAVINGS</small>
+            <h2 id="total-balance" style="font-size: 32px; margin: 10px 0;">RM 0.00</h2>
+            <div style="display: flex; justify-content: space-between; font-size: 12px; opacity: 0.9;">
+                <span>存入: <span id="mo-save">0</span></span>
+                <span>花費: <span id="mo-spend">0</span></span>
             </div>
         </div>
-        <div id="home-list"></div>
+        <div id="list-content"></div>
     </div>
 
-    <div id="p-list" class="page">
-        <h3 style="margin-left:10px; color:var(--serenity);">歷史清單 📜</h3>
-        <div id="full-list"></div>
+    <div id="p-report" class="page">
+        <div class="card-white">
+            <h3 style="margin-top: 0;">理財月報 📈</h3>
+            <canvas id="reportChart" style="max-height: 250px;"></canvas>
+        </div>
+        <div class="card-white" id="account-summary"></div>
     </div>
 
     <div id="p-set" class="page">
-        <div style="background:white; border-radius:35px; padding:35px; text-align:center;">
-            <h3 style="color:var(--serenity)">數據管理 ⚙️</h3>
-            <button class="btn-go" onclick="exportData()" style="background:#A2D9CE; margin-bottom:15px;">📤 匯出備份 (Excel)</button>
-            <button class="btn-go" onclick="document.getElementById('f-in').click()" style="background:#D5D8DC;">📥 匯入舊數據</button>
-            <input type="file" id="f-in" style="display:none" onchange="importData(this)">
-            <p style="font-size:12px; color:#CCC; margin-top:20px;">追星記帳本 v5.0 Final Edition</p>
+        <div class="card-white" style="text-align: center;">
+            <h3>數據中心 ⚙️</h3>
+            <button class="btn-go" onclick="exportExcel()" style="background:#A2D9CE; margin-bottom:10px;">📤 匯出備份 (Excel)</button>
+            <button class="btn-go" onclick="if(confirm('確定要清空嗎？')) {localStorage.clear(); location.reload();}" style="background:#E6B0AA;">🗑️ 清空所有數據</button>
         </div>
     </div>
 </div>
@@ -131,139 +111,158 @@
 <div class="add-btn" onclick="openAdd()">+</div>
 
 <div class="footer-nav">
-    <div class="nav-link active" onclick="tab('home', this)"><i>🏠</i>首頁</div>
-    <div class="nav-link" onclick="tab('list', this)"><i>📖</i>明細</div>
-    <div class="nav-link" onclick="tab('set', this)"><i>⚙️</i>設定</div>
-</div>
-
-<div class="modal" id="mod-chal">
-    <div class="modal-con">
-        <h3 style="margin-top:0">⚔️ 新挑戰：為 DK 存錢！</h3>
-        <input type="number" id="c-goal" placeholder="本週目標金額 (RM)" oninput="calcDaily()">
-        <p id="c-hint" style="color:var(--serenity); font-size:13px; margin-bottom:25px;">輸入金額自動計算每日目標</p>
-        <button class="btn-go" onclick="saveChal()">開始挑戰 Fighting! 💎</button>
-        <button onclick="closeAll()" style="width:100%; border:none; background:none; color:#BBB; margin-top:20px;">先不要</button>
-    </div>
+    <div class="nav-link active" onclick="nav('home', '消費清單 💎', this)"><i>📋</i>清單</div>
+    <div class="nav-link" onclick="nav('report', '財務報表 📊', this)"><i>📈</i>報表</div>
+    <div class="nav-link" onclick="nav('set', '系統設定 ⚙️', this)"><i>⚙️</i>設定</div>
 </div>
 
 <div class="modal" id="mod-add">
     <div class="modal-con">
         <h3 style="margin-top:0">新紀錄 ✍️</h3>
-        <div class="tag-wrap" id="tag-box"></div>
+        
+        <p style="font-size:12px; color:#999; margin-bottom:8px;">選擇帳戶</p>
+        <div class="tag-group">
+            <div class="tag account on" onclick="setAcc('RHB', this)">🏦 RHB</div>
+            <div class="tag account" onclick="setAcc('HLB', this)">🏦 HLB</div>
+            <div class="tag account" onclick="setAcc('TNG', this)">📱 TNG</div>
+        </div>
+
+        <p style="font-size:12px; color:#999; margin-bottom:8px;">類別選擇</p>
+        <div class="tag-group" id="tag-box"></div>
+
         <input type="number" id="r-amt" placeholder="金額 (RM)">
         <input type="text" id="r-note" placeholder="備註 (如: DK 音樂劇週邊)">
+        
         <button class="btn-go" onclick="saveRec()">確認存入記帳本</button>
-        <button onclick="closeAll()" style="width:100%; border:none; background:none; color:#BBB; margin-top:20px;">取消</button>
+        <button onclick="closeAll()" style="width:100%; border:none; background:none; color:#BBB; margin-top:15px;">取消</button>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('svt_saver_final')) || { list: [], chal: null, rate: 310 };
-    const tags = {
-        save: ['🏦 碩珉存錢', '🥯 飯錢省下', '💎 應援儲蓄', '🧧 意外收入'],
-        spend: ['🎭 音樂劇', '💿 專輯代購', '✨ 小卡集資', '🛍️ 同款購入', '📦 郵費']
+    let db = JSON.parse(localStorage.getItem('svt_v7_final')) || { list: [], rate: 350 };
+    
+    // 支出分類詳細化，儲蓄分類簡約化
+    const categories = {
+        save: ['⚔️ 碩珉存錢', '🧧 意外收入'],
+        spend: ['🎭 音樂劇', '💿 專輯', '✨ 小卡', '🛍️ 同款', '📦 郵費', '演唱會', '🍱 飯錢', '🚗 交通', '🏠 日常', '🩺 醫療', '👗 服飾']
     };
+    
+    let curAcc = 'RHB', curTag = '', curType = 'save';
+    let myChart = null;
 
-    function tab(id, el) {
+    function nav(id, title, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('p-' + id).classList.add('active');
+        document.getElementById('page-title').innerText = title;
         document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
+        if(id === 'report') renderChart();
     }
 
-    function render() {
-        const chalUI = document.getElementById('chal-display');
-        if(!db.chal) {
-            chalUI.innerHTML = `<div class="main-card" style="background:#D5D8DC;" onclick="openChal()">
-                <h3>尚未開始挑戰</h3><p>點擊這裡，開始為 DK 存下第一筆錢！💎</p>
-            </div>`;
-        } else {
-            const saved = db.list.filter(i => i.type === 'save' && new Date(i.date) >= new Date(db.chal.start)).reduce((a,b)=>a+b.amt, 0);
-            const prog = Math.min((saved / db.chal.target) * 100, 100);
-            chalUI.innerHTML = `<div class="main-card">
-                <span style="position:absolute; top:20px; right:25px; font-size:20px;" onclick="cancelChal()">✕</span>
-                <h3>本週儲蓄進度 Fighting!</h3>
-                <div class="amount">RM ${saved.toFixed(2)}</div>
-                <div class="progress-bar"><div class="progress-in" style="width:${prog}%"></div></div>
-                <div class="card-bottom"><span>目標 RM ${db.chal.target}</span><span>已達成 ${prog.toFixed(0)}%</span></div>
-            </div>`;
-        }
-
+    function renderChart() {
+        const ctx = document.getElementById('reportChart').getContext('2d');
         const m = new Date().toISOString().slice(0, 7);
         const ms = db.list.filter(i => i.type==='save' && i.date.startsWith(m)).reduce((a,b)=>a+b.amt, 0);
         const mp = db.list.filter(i => i.type==='spend' && i.date.startsWith(m)).reduce((a,b)=>a+b.amt, 0);
-        document.getElementById('mo-save').innerText = 'RM ' + ms.toFixed(1);
-        document.getElementById('mo-spend').innerText = 'RM ' + mp.toFixed(1);
 
-        const buildList = (data) => data.map((i, idx) => `
+        if(myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['存入', '花費'],
+                datasets: [{
+                    data: [ms, mp],
+                    backgroundColor: ['#92A8D1', '#F7CAC9'],
+                    borderWidth: 0
+                }]
+            },
+            options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+        });
+
+        const accs = ['RHB', 'HLB', 'TNG'];
+        let accHTML = '<h4>帳戶資金匯總</h4>';
+        accs.forEach(a => {
+            const amt = db.list.filter(i => i.acc === a).reduce((sum, i) => i.type==='save'? sum+i.amt : sum-i.amt, 0);
+            accHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:12px; background:#F8FAFD; padding:10px; border-radius:15px;">
+                <span>${a}</span><b style="color:var(--serenity)">RM ${amt.toFixed(2)}</b>
+            </div>`;
+        });
+        document.getElementById('account-summary').innerHTML = accHTML;
+    }
+
+    function render() {
+        const m = new Date().toISOString().slice(0, 7);
+        const ms = db.list.filter(i => i.type==='save' && i.date.startsWith(m)).reduce((a,b)=>a+b.amt, 0);
+        const mp = db.list.filter(i => i.type==='spend' && i.date.startsWith(m)).reduce((a,b)=>a+b.amt, 0);
+        
+        document.getElementById('total-balance').innerText = `RM ${(ms - mp).toFixed(2)}`;
+        document.getElementById('mo-save').innerText = `RM ${ms.toFixed(1)}`;
+        document.getElementById('mo-spend').innerText = `RM ${mp.toFixed(1)}`;
+
+        document.getElementById('list-content').innerHTML = db.list.map((i, idx) => `
             <div class="item-card" onclick="del(${idx})">
-                <div class="item-icon">${i.type==='save'?'💰':'🛍️'}</div>
-                <div class="item-info"><b>${i.note}</b><small>${i.date} · ${i.tag}</small></div>
-                <div class="item-amt">
+                <div class="item-icon" style="background:${i.type==='save'?'#E8F0FE':'#FEE8E8'}">${i.type==='save'?'💎':'🛍️'}</div>
+                <div class="item-info">
+                    <b>${i.note || i.tag}</b>
+                    <small>${i.date} | ${i.acc} | ${i.tag}</small>
+                </div>
+                <div style="text-align:right">
                     <b style="color:${i.type==='save'?'#7FB3D5':'#F1948A'}">${i.type==='save'?'+':'-'} ${i.amt.toFixed(2)}</b>
-                    <small style="color:#CCC">₩ ${(i.amt * db.rate).toFixed(0)}</small>
+                    <div style="font-size:10px; color:#CCC">₩ ${(i.amt * db.rate).toFixed(0)}</div>
                 </div>
             </div>
         `).join('');
-        
-        document.getElementById('home-list').innerHTML = buildList(db.list.slice(0, 5));
-        document.getElementById('full-list').innerHTML = buildList(db.list);
-        localStorage.setItem('svt_saver_final', JSON.stringify(db));
+        localStorage.setItem('svt_v7_final', JSON.stringify(db));
     }
 
-    function calcDaily() {
-        const v = document.getElementById('c-goal').value;
-        document.getElementById('c-hint').innerText = v > 0 ? `🌸 每日目標：RM ${(v/7).toFixed(2)}，DK 給你加油！` : "輸入金額自動計算每日目標";
-    }
-    function openChal() { document.getElementById('mod-chal').style.display='block'; }
-    function saveChal() {
-        const t = document.getElementById('c-goal').value;
-        if(!t) return;
-        db.chal = { target: parseFloat(t), start: new Date().getTime() };
-        closeAll(); render();
-    }
-    function cancelChal() { event.stopPropagation(); if(confirm("確定取消本週挑戰嗎？")) { db.chal = null; render(); } }
-
-    let curT = '', curY = 'save';
     function openAdd() {
-        document.getElementById('mod-add').style.display='block';
-        document.getElementById('tag-box').innerHTML = tags.save.map(t => `<div class="tag" onclick="setTag('${t}','save',this)">${t}</div>`).join('') +
-            tags.spend.map(t => `<div class="tag" style="color:var(--rose)" onclick="setTag('${t}','spend',this)">${t}</div>`).join('');
-    }
-    function setTag(t, type, el) {
-        document.querySelectorAll('.tag').forEach(c => c.classList.remove('on'));
-        el.classList.add('on'); curT = t; curY = type;
-    }
-    function saveRec() {
-        const a = parseFloat(document.getElementById('r-amt').value);
-        const n = document.getElementById('r-note').value;
-        if(!a || !curT) return alert("請填寫金額並選擇標籤哦！");
-        db.list.unshift({ date: new Date().toISOString().slice(0,10), amt: a, note: n, tag: curT, type: curY });
-        closeAll(); render();
-        document.getElementById('r-amt').value = ''; document.getElementById('r-note').value = '';
+        document.getElementById('mod-add').style.display = 'block';
+        let html = '<p style="font-size:11px; width:100%; color:var(--serenity)">✦ 儲蓄分類</p>';
+        categories.save.forEach(t => html += `<div class="tag" onclick="setTag('${t}','save',this)">${t}</div>`);
+        html += '<p style="font-size:11px; width:100%; color:var(--rose); margin-top:10px;">✦ 支出詳細分類</p>';
+        categories.spend.forEach(t => html += `<div class="tag" onclick="setTag('${t}','spend',this)">${t}</div>`);
+        document.getElementById('tag-box').innerHTML = html;
     }
 
-    function exportData() {
+    function setAcc(a, el) {
+        document.querySelectorAll('.tag.account').forEach(t => t.classList.remove('on'));
+        el.classList.add('on'); curAcc = a;
+    }
+
+    function setTag(t, type, el) {
+        document.querySelectorAll('.tag').forEach(tag => { if(!tag.classList.contains('account')) tag.classList.remove('on')});
+        el.classList.add('on'); curTag = t; curType = type;
+    }
+
+    function saveRec() {
+        const amt = parseFloat(document.getElementById('r-amt').value);
+        if(!amt || !curTag) return alert("請輸入金額與選擇分類");
+        db.list.unshift({
+            date: new Date().toISOString().slice(0, 10),
+            amt: amt,
+            tag: curTag,
+            type: curType,
+            acc: curAcc,
+            note: document.getElementById('r-note').value
+        });
+        closeAll(); render();
+        document.getElementById('r-amt').value = '';
+        document.getElementById('r-note').value = '';
+    }
+
+    function exportExcel() {
         const ws = XLSX.utils.json_to_sheet(db.list);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Records");
-        XLSX.writeFile(wb, "追星記帳本備份.xlsx");
-    }
-    function importData(input) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            db.list = XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(e.target.result), {type:'array'}).Sheets["Records"]);
-            render(); alert("導入成功！💎");
-        };
-        reader.readAsArrayBuffer(input.files[0]);
+        XLSX.writeFile(wb, "追星帳本_精細版備份.xlsx");
     }
 
-    function del(idx) { if(confirm("要刪除這筆紀錄嗎？")) { db.list.splice(idx,1); render(); } }
+    function del(idx) { if(confirm("確定刪除這筆紀錄嗎？")) { db.list.splice(idx, 1); render(); } }
     function closeAll() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
     fetch('https://api.exchangerate-api.com/v4/latest/MYR').then(r=>r.json()).then(d=>{
         db.rate = d.rates.KRW;
-        document.getElementById('rate-ui').innerText = `1 RM = ${db.rate.toFixed(2)} ₩ (實時)`;
+        document.getElementById('rate-val').innerText = `1 RM = ${db.rate.toFixed(2)} ₩`;
         render();
     }).catch(()=>render());
 </script>
