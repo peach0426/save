@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DK 追星理財大滿貫 (完全體)</title>
+    <title>DK 追星記帳本 (完整補完版)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Noto Sans TC', sans-serif; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); overflow: hidden; color: #444; }
 
-        /* Header */
+        /* 頂部匯率欄 */
         .app-header {
             padding: 55px 25px 20px; background: white; border-radius: 0 0 40px 40px;
             display: flex; justify-content: space-between; align-items: center;
@@ -21,39 +21,39 @@
         .app-header h1 { font-size: 22px; margin: 0; color: var(--serenity); font-weight: 700; }
         .rate-chip { background: #F1F5F9; padding: 8px 15px; border-radius: 25px; font-size: 11px; color: var(--serenity); font-weight: 700; }
 
-        /* 內容容器 */
-        .content-container { height: calc(100% - 185px); overflow-y: auto; padding: 20px; scroll-behavior: smooth; }
+        /* 容器 */
+        .content-container { height: calc(100% - 185px); overflow-y: auto; padding: 20px; }
         .page { display: none; width: 100%; }
-        .page.active { display: block; animation: softFade 0.4s ease; }
-        @keyframes softFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .page.active { display: block; animation: softFade 0.3s ease; }
+        @keyframes softFade { from { opacity: 0; } to { opacity: 1; } }
 
-        /* DK 挑戰卡片 (物理還原) */
+        /* ⚔️ DK 一週挑戰卡片 (還原) */
         .challenge-card {
-            background: linear-gradient(135deg, #92A8D1 10%, #F7CAC9 90%);
+            background: linear-gradient(135deg, #92A8D1 0%, #F7CAC9 100%);
             border-radius: 35px; padding: 25px; color: white;
             box-shadow: 0 15px 35px rgba(146, 168, 209, 0.4); margin-bottom: 20px;
             text-align: center; position: relative;
         }
         .challenge-card h3 { font-size: 14px; opacity: 0.9; margin: 0; }
-        .challenge-card .amt { font-size: 32px; font-weight: 700; margin: 8px 0; }
-        .prog-bg { background: rgba(255,255,255,0.3); height: 12px; border-radius: 10px; margin: 15px 0; }
+        .challenge-card .amt { font-size: 32px; font-weight: 700; margin: 10px 0; }
+        .prog-bg { background: rgba(255,255,255,0.3); height: 12px; border-radius: 10px; margin: 15px 0; overflow: hidden; }
         .prog-fill { background: white; height: 100%; border-radius: 10px; transition: width 0.8s ease; width: 0%; }
-        .card-bottom { display: flex; justify-content: space-between; font-size: 11px; }
+        .card-stats { display: flex; justify-content: space-between; font-size: 11px; }
 
-        /* 白色區塊卡片 */
+        /* 白色區塊 */
         .card-white { background: white; border-radius: 30px; padding: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.03); margin-bottom: 15px; }
 
-        /* 列表樣式 */
+        /* 記帳列表項目 */
         .item-card {
-            background: white; border-radius: 25px; padding: 18px;
-            margin-bottom: 12px; display: flex; align-items: center; gap: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            background: white; border-radius: 25px; padding: 18px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.02);
         }
+        .item-icon { width: 45px; height: 45px; background: #F8FAFD; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         .item-info { flex: 1; }
         .item-info b { font-size: 15px; display: block; color: #555; }
         .item-info small { color: #BBB; font-size: 11px; }
 
-        /* 底部導航 */
+        /* 導航 */
         .footer-nav {
             position: fixed; bottom: 0; width: 100%; height: 90px;
             background: white; display: flex; align-items: center;
@@ -68,158 +68,161 @@
             position: fixed; bottom: 105px; right: 25px;
             width: 60px; height: 60px; background: linear-gradient(135deg, var(--serenity), var(--rose));
             border-radius: 50%; color: white; display: flex; align-items: center;
-            justify-content: center; font-size: 30px; box-shadow: 0 10px 25px rgba(146, 168, 209, 0.4); z-index: 150;
+            justify-content: center; font-size: 35px; box-shadow: 0 10px 25px rgba(146, 168, 209, 0.4); z-index: 150;
         }
 
-        /* 彈窗樣式 */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(8px); }
-        .modal-con { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 45px 45px 0 0; padding: 25px; max-height: 92vh; overflow-y: auto; }
+        /* 彈窗細節 */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(10px); }
+        .modal-con { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 45px 45px 0 0; padding: 30px; max-height: 92vh; overflow-y: auto; }
+        
         .tag-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-        .tag { padding: 8px 14px; background: #F3F4F6; border-radius: 12px; font-size: 11px; font-weight: 700; color: #777; transition: 0.2s; }
+        .tag { padding: 8px 14px; background: #F3F4F6; border-radius: 12px; font-size: 11px; font-weight: 700; color: #777; }
         .tag.on { background: var(--serenity); color: white; }
-        .tag.account.on { background: #4285F4; color: white; }
-        .tag.status-tag { border: 1px dashed var(--serenity); color: var(--serenity); background: #E8F0FE; }
-        .tag.status-tag.on { background: var(--serenity); color: white; border-style: solid; }
+        .tag.account-tag { background: #E8F0FE; color: var(--serenity); }
+        .tag.account-tag.on { background: #4285F4; color: white; }
+        .tag.order-tag { border: 1.5px dashed var(--serenity); background: transparent; color: var(--serenity); }
+        .tag.order-tag.on { background: var(--serenity); color: white; border-style: solid; }
 
-        input { width: 100%; padding: 14px; margin-bottom: 12px; border: 2px solid #F1F5F9; border-radius: 15px; font-size: 14px; outline: none; }
+        input { width: 100%; padding: 15px; margin-bottom: 12px; border: 2px solid #F1F5F9; border-radius: 15px; font-size: 15px; outline: none; }
         .btn-go { width: 100%; padding: 18px; background: var(--serenity); color: white; border: none; border-radius: 20px; font-weight: 700; font-size: 16px; margin-top: 10px; }
+        .btn-cancel { width: 100%; padding: 10px; background: none; border: none; color: #BBB; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="app-header">
     <h1 id="page-title">消費清單 💎</h1>
-    <div class="rate-chip" id="rate-val">1 RM = --- ₩</div>
+    <div class="rate-chip" id="rate-display">1 RM = --- ₩</div>
 </div>
 
 <div class="content-container">
     <div id="p-home" class="page active">
-        <div id="dk-challenge-area"></div>
+        <div id="challenge-area"></div>
         
         <div class="card-white" style="display:flex; justify-content:space-around; text-align:center;">
-            <div><small style="color:#BBB">月存入</small><br><b id="mo-save" style="color:var(--serenity); font-size:18px;">RM 0</b></div>
-            <div><small style="color:#BBB">月支出</small><br><b id="mo-spend" style="color:var(--rose); font-size:18px;">RM 0</b></div>
+            <div><small style="color:#BBB">月存入</small><br><b id="sum-save" style="color:var(--serenity); font-size:20px;">RM 0</b></div>
+            <div><small style="color:#BBB">月支出</small><br><b id="sum-spend" style="color:var(--rose); font-size:20px;">RM 0</b></div>
         </div>
         
-        <div id="list-content"></div>
+        <div id="list-main"></div>
     </div>
 
     <div id="p-report" class="page">
         <div class="card-white">
-            <h3 style="margin-top:0">理財報告 📈</h3>
-            <canvas id="reportChart" style="max-height: 220px;"></canvas>
+            <h3 style="margin-top:0">本月支出分佈 📊</h3>
+            <canvas id="myChart" style="max-height: 250px;"></canvas>
         </div>
-        <div class="card-white" id="account-detail-area">
-            </div>
+        <div id="acc-details"></div>
     </div>
 
     <div id="p-set" class="page">
         <div class="card-white" style="text-align:center;">
-            <h3>數據管理 ⚙️</h3>
-            <button class="btn-go" onclick="exportExcel()" style="background:#A2D9CE;">匯出 Excel 備份</button>
-            <button class="btn-go" style="background:#E6B0AA;" onclick="clearData()">清空所有數據</button>
+            <h3>數據中心 ⚙️</h3>
+            <button class="btn-go" onclick="exportData()" style="background:#A2D9CE;">📤 匯出備份 (Excel)</button>
+            <button class="btn-go" onclick="importTrigger()" style="background:#D5D8DC; margin-top:10px;">📥 匯入數據</button>
+            <input type="file" id="f-upload" style="display:none" onchange="importData(this)">
+            <button class="btn-go" style="background:#E6B0AA; margin-top:20px;" onclick="clearAll()">🗑️ 清空所有數據</button>
         </div>
     </div>
 </div>
 
-<div class="add-btn" onclick="openAdd()">+</div>
+<div class="add-btn" onclick="openModal()">+</div>
 
 <div class="footer-nav">
     <div class="nav-link active" onclick="nav('home', '消費清單 💎', this)"><i>📋</i>清單</div>
     <div class="nav-link" onclick="nav('report', '財務報表 📊', this)"><i>📈</i>報表</div>
-    <div class="nav-link" onclick="nav('set', '系統設定 ⚙️', this)"><i>⚙️</i>設定</div>
+    <div class="nav-link" onclick="nav('set', '數據中心 ⚙️', this)"><i>⚙️</i>設定</div>
 </div>
 
-<div class="modal" id="mod-chal">
+<div class="modal" id="modal-chal">
     <div class="modal-con">
-        <h3 style="margin-top:0">⚔️ 開始儲蓄挑戰</h3>
-        <input type="number" id="c-goal" placeholder="目標金額 (RM)" oninput="calcDaily()">
-        <p id="c-hint" style="color:var(--serenity); font-size:12px; margin-bottom:20px;">輸入金額計算日均...</p>
-        <button class="btn-go" onclick="saveChal()">Fighting!</button>
-        <button onclick="closeAll()" style="width:100%; border:none; background:none; color:#BBB; margin-top:15px;">取消</button>
+        <h3>⚔️ 開啟一週儲蓄挑戰</h3>
+        <p style="font-size:12px; color:#999">為 DK 存下目標金額，本週也要 Fighting!</p>
+        <input type="number" id="chal-goal" placeholder="目標金額 (RM)" oninput="calcDailyGoal()">
+        <p id="daily-hint" style="color:var(--serenity); font-size:12px;"></p>
+        <button class="btn-go" onclick="startChal()">開始挑戰</button>
+        <button class="btn-cancel" onclick="closeAll()">取消</button>
     </div>
 </div>
 
-<div class="modal" id="mod-add">
+<div class="modal" id="modal-add">
     <div class="modal-con">
-        <h3 style="margin-top:0">新增紀錄 ✍️</h3>
+        <h3 style="margin:0 0 15px">新紀錄 ✍️</h3>
         
-        <small>📅 日期選擇</small>
-        <input type="date" id="r-date">
+        <small>📅 選擇日期</small>
+        <input type="date" id="in-date">
         
         <small>🏦 選擇帳戶</small>
         <div class="tag-group">
-            <div class="tag account on" onclick="setAcc('RHB', this)">RHB</div>
-            <div class="tag account" onclick="setAcc('HLB', this)">HLB</div>
-            <div class="tag account" onclick="setAcc('TNG', this)">TNG</div>
+            <div class="tag account-tag on" onclick="setA('RHB', this)">RHB</div>
+            <div class="tag account-tag" onclick="setA('HLB', this)">HLB</div>
+            <div class="tag account-tag" onclick="setA('TNG', this)">TNG</div>
         </div>
 
-        <small style="color:var(--serenity)">💎 儲蓄分類</small>
-        <div class="tag-group" id="save-tags"></div>
+        <small style="color:var(--serenity)">💎 儲蓄類別</small>
+        <div class="tag-group" id="tags-save"></div>
 
-        <small style="color:var(--rose)">🛍️ 支出分類</small>
-        <div class="tag-group" id="spend-tags"></div>
+        <small style="color:var(--rose)">🛍️ 支出類別</small>
+        <div class="tag-group" id="tags-spend"></div>
 
-        <small style="color:#AAA">📦 網購狀態 (支出可用)</small>
-        <div class="tag-group" id="status-tags"></div>
+        <small style="color:#AAA">📦 網購進度 (選填)</small>
+        <div class="tag-group" id="tags-order"></div>
 
-        <input type="number" id="r-amt" placeholder="金額 (RM)">
-        <input type="text" id="r-note" placeholder="備註 (如: DK 專輯)">
+        <input type="number" id="in-amt" placeholder="金額 (RM)">
+        <input type="text" id="in-note" placeholder="備註/自定義名稱 (如: DK 音樂劇小卡)">
         
-        <button class="btn-go" onclick="saveRec()">確認存入</button>
-        <button onclick="closeAll()" style="width:100%; border:none; background:none; color:#BBB; margin-top:15px;">取消</button>
+        <button class="btn-go" onclick="saveRecord()">確認存入</button>
+        <button class="btn-cancel" onclick="closeAll()">取消</button>
     </div>
 </div>
 
 <script>
-    // 1. 初始化與數據 (確保版本號唯一)
-    let db = JSON.parse(localStorage.getItem('svt_ultimate_v11')) || { list: [], chal: null, rate: 350 };
-    
-    const categories = {
+    // 1. 初始化
+    let db = JSON.parse(localStorage.getItem('dk_final_db_v12')) || { list: [], chal: null, rate: 350 };
+    const config = {
         save: ['⚔️ 碩珉存錢', '🧧 意外收入'],
-        spend: ['🎭 音樂劇', '💿 專輯', '✨ 小卡', '🛍️ 同款', '📦 郵費', '🍱 飯錢', '🚗 交通', '🏠 日常'],
-        status: ['❌ 未付款', '✅ 已付款', '🚚 未到貨', '📦 已收貨']
+        spend: ['🎭 音樂劇', '💿 專輯', '✨ 小卡', '🛍️ 同款', '📦 郵費', '🍱 飯錢', '🚗 交通', '🩺 醫療'],
+        order: ['❌ 未付款', '✅ 已付款', '🚚 未到貨', '📦 已收貨']
     };
+    let curAcc = 'RHB', curT = '', curType = 'save', chartObj = null;
 
-    let curAcc = 'RHB', curTag = '', curType = 'save', myChart = null;
-
-    // 2. 導航功能
     function nav(id, title, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById('p-' + id).classList.add('active');
         document.getElementById('page-title').innerText = title;
         document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
-        if(id === 'report') renderChart();
+        if(id === 'report') renderReport();
     }
 
-    // 3. 核心渲染 (挑戰卡片 + 清單)
-    function render() {
-        // 挑戰卡片邏輯 (完全保留)
-        const chalUI = document.getElementById('dk-challenge-area');
+    // 2. 渲染邏輯
+    function refresh() {
+        // 挑戰卡片
+        const area = document.getElementById('challenge-area');
         if(!db.chal) {
-            chalUI.innerHTML = `<div class="challenge-card" style="background:#BDC3C7;" onclick="openChal()"><h3>尚未開始挑戰</h3><p>點擊開啟一週儲蓄挑戰 💎</p></div>`;
+            area.innerHTML = `<div class="challenge-card" style="background:#CCC;" onclick="openChalMod()"><h3>目前沒有挑戰</h3><p>點擊開啟一週儲蓄計劃 💎</p></div>`;
         } else {
-            const saved = db.list.filter(i => i.type === 'save' && new Date(i.date) >= new Date(db.chal.start)).reduce((a,b)=>a+b.amt, 0);
-            const prog = Math.min((saved / db.chal.target) * 100, 100);
-            chalUI.innerHTML = `<div class="challenge-card" onclick="cancelChal()">
+            const saved = db.list.filter(i => i.type==='save' && new Date(i.date) >= new Date(db.chal.start)).reduce((a,b)=>a+b.amt, 0);
+            const p = Math.min((saved / db.chal.target) * 100, 100);
+            area.innerHTML = `<div class="challenge-card" onclick="stopChal()">
                 <span style="position:absolute; top:15px; right:20px;">✕</span>
                 <h3>本週儲蓄挑戰</h3><div class="amt">RM ${saved.toFixed(2)}</div>
-                <div class="prog-bg"><div class="prog-fill" style="width:${prog}%"></div></div>
-                <div class="card-bottom"><span>目標 RM ${db.chal.target}</span><span>達成率 ${prog.toFixed(0)}%</span></div>
+                <div class="prog-bg"><div class="prog-fill" style="width:${p}%"></div></div>
+                <div class="card-stats"><span>目標 RM ${db.chal.target}</span><span>達成 ${p.toFixed(0)}%</span></div>
             </div>`;
         }
 
-        // 月統計
+        // 月度總計
         const m = new Date().toISOString().slice(0, 7);
-        const ms = db.list.filter(i => i.type==='save' && i.date.startsWith(m)).reduce((a,b)=>a+b.amt, 0);
-        const mp = db.list.filter(i => i.type==='spend' && i.date.startsWith(m)).reduce((a,b)=>a+b.amt, 0);
-        document.getElementById('mo-save').innerText = 'RM ' + ms.toFixed(1);
-        document.getElementById('mo-spend').innerText = 'RM ' + mp.toFixed(1);
+        const sS = db.list.filter(i => i.type==='save' && i.date.startsWith(m)).reduce((a,b)=>a+b.amt, 0);
+        const sP = db.list.filter(i => i.type==='spend' && i.date.startsWith(m)).reduce((a,b)=>a+b.amt, 0);
+        document.getElementById('sum-save').innerText = 'RM ' + sS.toFixed(1);
+        document.getElementById('sum-spend').innerText = 'RM ' + sP.toFixed(1);
 
-        // 清單 (匯率邏輯保留)
-        document.getElementById('list-content').innerHTML = db.list.map((i, idx) => `
-            <div class="item-card" onclick="del(${idx})">
+        // 清單渲染
+        document.getElementById('list-main').innerHTML = db.list.map((i, idx) => `
+            <div class="item-card" onclick="deleteItem(${idx})">
+                <div class="item-icon" style="background:${i.type==='save'?'#E8F0FE':'#FEE8E8'}">${i.type==='save'?'💰':'🛍️'}</div>
                 <div class="item-info">
                     <b>${i.note || i.tag}</b>
                     <small>${i.date} | ${i.acc} | ${i.tag}</small>
@@ -231,88 +234,87 @@
             </div>
         `).join('');
         
-        localStorage.setItem('svt_ultimate_v11', JSON.stringify(db));
+        localStorage.setItem('dk_final_db_v12', JSON.stringify(db));
     }
 
-    // 4. 報表渲染 (圓餅圖 + 帳戶統計)
-    function renderChart() {
-        const ctx = document.getElementById('reportChart').getContext('2d');
-        const ms = db.list.filter(i => i.type==='save').reduce((a,b)=>a+b.amt, 0);
-        const mp = db.list.filter(i => i.type==='spend').reduce((a,b)=>a+b.amt, 0);
-        
-        if(myChart) myChart.destroy();
-        myChart = new Chart(ctx, { 
-            type: 'doughnut', 
-            data: { labels: ['存入', '支出'], datasets: [{ data: [ms, mp], backgroundColor: ['#92A8D1', '#F7CAC9'], borderWidth: 0 }] },
+    // 3. 報表邏輯 (含三帳戶統計)
+    function renderReport() {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const s = db.list.filter(i => i.type==='save').reduce((a,b)=>a+b.amt, 0);
+        const p = db.list.filter(i => i.type==='spend').reduce((a,b)=>a+b.amt, 0);
+        if(chartObj) chartObj.destroy();
+        chartObj = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: ['存入', '支出'], datasets: [{ data: [s, p], backgroundColor: ['#92A8D1', '#F7CAC9'] }] },
             options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
         });
 
-        // 帳戶餘額詳細顯示
-        let accHTML = '<h4>帳戶資金明細</h4>';
-        ['RHB', 'HLB', 'TNG'].forEach(a => {
-            const balance = db.list.filter(i => i.acc === a).reduce((sum, i) => i.type==='save'? sum+i.amt : sum-i.amt, 0);
-            accHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; background:#F8FAFD; padding:12px; border-radius:15px;">
-                <span>${a}</span><b style="color:var(--serenity)">RM ${balance.toFixed(2)}</b>
+        let html = '<h4>帳戶餘額表</h4>';
+        ['RHB', 'HLB', 'TNG'].forEach(acc => {
+            const bal = db.list.filter(i => i.acc === acc).reduce((sum, i) => i.type==='save' ? sum+i.amt : sum-i.amt, 0);
+            html += `<div style="display:flex; justify-content:space-between; padding:15px; background:white; border-radius:18px; margin-bottom:10px; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+                <span>${acc}</span><b style="color:var(--serenity)">RM ${bal.toFixed(2)}</b>
             </div>`;
         });
-        document.getElementById('account-detail-area').innerHTML = accHTML;
+        document.getElementById('acc-details').innerHTML = html;
     }
 
-    // 5. 新增功能邏輯
-    function openAdd() {
-        document.getElementById('mod-add').style.display = 'block';
-        document.getElementById('r-date').value = new Date().toISOString().slice(0, 10); // 預設今天日期
-        
-        // 渲染標籤
-        document.getElementById('save-tags').innerHTML = categories.save.map(t => `<div class="tag" onclick="setTag('${t}','save',this)">${t}</div>`).join('');
-        document.getElementById('spend-tags').innerHTML = categories.spend.map(t => `<div class="tag" onclick="setTag('${t}','spend',this)">${t}</div>`).join('');
-        document.getElementById('status-tags').innerHTML = categories.status.map(t => `<div class="tag status-tag" onclick="setTag('${t}','spend',this)">${t}</div>`).join('');
+    // 4. 記帳功能
+    function openModal() {
+        document.getElementById('modal-add').style.display = 'block';
+        document.getElementById('in-date').value = new Date().toISOString().slice(0, 10);
+        document.getElementById('tags-save').innerHTML = config.save.map(t => `<div class="tag" onclick="setT('${t}','save',this)">${t}</div>`).join('');
+        document.getElementById('tags-spend').innerHTML = config.spend.map(t => `<div class="tag" onclick="setT('${t}','spend',this)">${t}</div>`).join('');
+        document.getElementById('tags-order').innerHTML = config.order.map(t => `<div class="tag order-tag" onclick="setT('${t}','spend',this)">${t}</div>`).join('');
     }
 
-    function setAcc(a, el) { document.querySelectorAll('.tag.account').forEach(t => t.classList.remove('on')); el.classList.add('on'); curAcc = a; }
-    function setTag(t, type, el) { document.querySelectorAll('.tag:not(.account)').forEach(tag => tag.classList.remove('on')); el.classList.add('on'); curTag = t; curType = type; }
+    function setA(a, el) { document.querySelectorAll('.account-tag').forEach(t => t.classList.remove('on')); el.classList.add('on'); curAcc = a; }
+    function setT(t, type, el) { document.querySelectorAll('.tag:not(.account-tag)').forEach(tag => tag.classList.remove('on')); el.classList.add('on'); curT = t; curType = type; }
 
-    function saveRec() {
-        const amt = parseFloat(document.getElementById('r-amt').value);
-        if(!amt || !curTag) return alert("請輸入金額並選擇標籤");
+    function saveRecord() {
+        const amt = parseFloat(document.getElementById('in-amt').value);
+        if(!amt || !curT) return alert("請填寫金額與選擇標籤");
         db.list.unshift({
-            date: document.getElementById('r-date').value,
-            amt: amt,
-            tag: curTag,
-            type: curType,
-            acc: curAcc,
-            note: document.getElementById('r-note').value
+            date: document.getElementById('in-date').value,
+            amt: amt, tag: curT, type: curType, acc: curAcc,
+            note: document.getElementById('in-note').value
         });
-        closeAll(); render();
-        document.getElementById('r-amt').value = ''; document.getElementById('r-note').value = '';
+        closeAll(); refresh();
+        document.getElementById('in-amt').value = ''; document.getElementById('in-note').value = '';
     }
 
-    // 6. 挑戰邏輯
-    function openChal() { document.getElementById('mod-chal').style.display='block'; }
-    function saveChal() {
-        const goal = document.getElementById('c-goal').value;
-        if(!goal) return;
-        db.chal = { target: parseFloat(goal), start: new Date().getTime() };
-        closeAll(); render();
+    // 5. 挑戰功能
+    function openChalMod() { document.getElementById('modal-chal').style.display = 'block'; }
+    function startChal() {
+        const g = document.getElementById('chal-goal').value;
+        if(!g) return;
+        db.chal = { target: parseFloat(g), start: new Date().getTime() };
+        closeAll(); refresh();
     }
-    function cancelChal() { if(confirm("取消目前的挑戰？")) { db.chal = null; render(); } }
-    function calcDaily() { 
-        const v = document.getElementById('c-goal').value; 
-        document.getElementById('c-hint').innerText = v > 0 ? `🌸 每日需存：RM ${(v/7).toFixed(2)}` : "輸入金額算日均..."; 
+    function stopChal() { event.stopPropagation(); if(confirm("確定取消挑戰？")) { db.chal = null; refresh(); } }
+    function calcDailyGoal() { const v = document.getElementById('chal-goal').value; document.getElementById('daily-hint').innerText = v ? `日均需存: RM ${(v/7).toFixed(2)}` : ""; }
+
+    // 6. 系統功能
+    function exportData() { XLSX.writeFile(XLSX.utils.book_append_sheet(XLSX.utils.book_new(), XLSX.utils.json_to_sheet(db.list), "Records"), "DK_Money_Backup.xlsx"); }
+    function importTrigger() { document.getElementById('f-upload').click(); }
+    function importData(f) {
+        const r = new FileReader();
+        r.onload = e => {
+            db.list = XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(e.target.result), {type:'array'}).Sheets["Records"]);
+            refresh(); alert("恢復成功！");
+        };
+        r.readAsArrayBuffer(f.files[0]);
     }
+    function deleteItem(idx) { if(confirm("刪除這筆紀錄？")) { db.list.splice(idx, 1); refresh(); } }
+    function clearAll() { if(confirm("確定清空所有數據？")) { localStorage.clear(); location.reload(); } }
+    function closeAll() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
 
-    // 7. 系統功能
-    function exportExcel() { XLSX.writeFile(XLSX.utils.book_append_sheet(XLSX.utils.book_new(), XLSX.utils.json_to_sheet(db.list), "Records"), "追星備份.xlsx"); }
-    function clearData() { if(confirm("危險操作！確定清空嗎？")) { localStorage.clear(); location.reload(); } }
-    function del(idx) { if(confirm("確定刪除？")) { db.list.splice(idx, 1); render(); } }
-    function closeAll() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
-
-    // 匯率 API
+    // 匯率
     fetch('https://api.exchangerate-api.com/v4/latest/MYR').then(r=>r.json()).then(d=>{
         db.rate = d.rates.KRW;
-        document.getElementById('rate-val').innerText = `1 RM = ${db.rate.toFixed(2)} ₩`;
-        render();
-    }).catch(()=>render());
+        document.getElementById('rate-display').innerText = `1 RM = ${db.rate.toFixed(2)} ₩`;
+        refresh();
+    }).catch(()=>refresh());
 </script>
 </body>
 </html>
