@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <link rel="apple-touch-icon" href="icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#92A8D1">
-<link rel="icon" href="icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>追星理財大滿貫 ⚔️💎</title>
+    
+    <title>DK 追星理財大滿貫 ⚔️💎</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#92A8D1">
+    
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
@@ -23,7 +28,6 @@
             font-family: 'Noto Sans TC', sans-serif; overflow: hidden;
         }
 
-        /* 標題欄 - 修正名字回歸 */
         .app-header {
             padding: 55px 25px 20px; background: white; border-radius: 0 0 40px 40px;
             display: flex; justify-content: space-between; align-items: center;
@@ -37,7 +41,6 @@
         .page.active { display: block; animation: softPop 0.3s ease; }
         @keyframes softPop { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* ⚔️ DK 一週挑戰卡片 - 增加代表物 */
         .challenge-card {
             background: linear-gradient(135deg, #92A8D1 0%, #F7CAC9 50%, #FFB74D 100%);
             border-radius: 35px; padding: 25px; color: white;
@@ -62,7 +65,6 @@
         .item-info b { font-size: 15px; display: block; color: #555; }
         .item-info small { color: #BBB; font-size: 11px; }
 
-        /* 導航欄 - 修正圖示為代表物 */
         .footer-nav {
             position: fixed; bottom: 0; width: 100%; height: 90px;
             background: white; display: flex; align-items: center;
@@ -80,7 +82,6 @@
             justify-content: center; font-size: 35px; box-shadow: 0 10px 25px rgba(146, 168, 209, 0.4); z-index: 150;
         }
 
-        /* 彈窗 */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(8px); }
         .modal-con { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 45px 45px 0 0; padding: 30px; max-height: 92vh; overflow-y: auto; }
         .tag { padding: 8px 15px; background: #F3F4F6; border-radius: 12px; font-size: 11px; font-weight: 700; color: #777; margin: 0 5px 10px 0; display: inline-block; }
@@ -122,7 +123,7 @@
             <button class="btn-go" onclick="exportData()" style="background:#A2D9CE;">📤 匯出備份 (Excel)</button>
             <button class="btn-go" onclick="document.getElementById('f-up').click()" style="background:#D5D8DC; margin-top:10px;">📥 匯入數據</button>
             <input type="file" id="f-up" style="display:none" onchange="importData(this)">
-            <button class="btn-go" style="background:#E6B0AA; margin-top:30px;" onclick="if(confirm('確定清空？')){localStorage.clear();location.reload();}">🗑️ 清空所有數據</button>
+            <button class="btn-go" style="background:#E6B0AA; margin-top:30px;" onclick="if(confirm('確定清空數據？')){localStorage.clear();location.reload();}">🗑️ 清空所有數據</button>
         </div>
     </div>
 </div>
