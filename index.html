@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <title>DK 追星理財大滿貫 ⚔️💎</title>
+    <title>追星理財大滿貫 ⚔️💎</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
@@ -50,9 +50,12 @@
         .challenge-card .amt { font-family: 'ZCOOL KuaiLe', sans-serif; font-size: 36px; margin: 10px 0; }
         .prog-bg { background: rgba(255,255,255,0.3); height: 12px; border-radius: 10px; margin: 15px 0; overflow: hidden; }
         .prog-fill { background: white; height: 100%; border-radius: 10px; transition: width 0.8s ease; }
-        .card-stats { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; }
 
         .card-white { background: white; border-radius: 30px; padding: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.03); margin-bottom: 15px; }
+
+        /* 篩選器樣式 */
+        .filter-box { display: flex; gap: 10px; margin-bottom: 15px; justify-content: center; }
+        .filter-select { padding: 8px 15px; border-radius: 15px; border: 1.5px solid var(--serenity); color: var(--text); background: white; font-weight: 700; outline: none; }
 
         .item-card {
             background: white; border-radius: 25px; padding: 18px; margin-bottom: 12px;
@@ -86,9 +89,7 @@
         .modal-con { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 45px 45px 0 0; padding: 30px; max-height: 92vh; overflow-y: auto; }
         .tag { padding: 8px 15px; background: #F3F4F6; border-radius: 12px; font-size: 11px; font-weight: 700; color: #777; margin: 0 5px 10px 0; display: inline-block; }
         .tag.on { background: var(--serenity); color: white; }
-        .tag.order-tag { border: 1.5px dashed var(--sunshine); color: var(--sunshine); }
-        .tag.order-tag.on { background: var(--sunshine); color: white; border-style: solid; }
-        input { width: 100%; padding: 15px; margin-bottom: 12px; border: 2px solid #F1F5F9; border-radius: 15px; font-size: 15px; outline: none; }
+        input, select { width: 100%; padding: 15px; margin-bottom: 12px; border: 2px solid #F1F5F9; border-radius: 15px; font-size: 15px; outline: none; }
         .btn-go { width: 100%; padding: 18px; background: var(--serenity); color: white; border: none; border-radius: 20px; font-weight: 700; font-size: 16px; margin-top: 10px; }
     </style>
 </head>
@@ -103,15 +104,19 @@
     <div id="p-home" class="page active">
         <div id="dk-challenge-box"></div>
         <div class="card-white" style="display:flex; justify-content:space-around; text-align:center;">
-            <div><small style="color:#BBB">🌻 月儲蓄</small><br><b id="mo-s" style="color:var(--serenity); font-size:20px;">RM 0</b></div>
-            <div><small style="color:#BBB">🛒 月支出</small><br><b id="mo-p" style="color:var(--rose); font-size:20px;">RM 0</b></div>
+            <div><small style="color:#BBB">🌻 本月儲蓄</small><br><b id="mo-s" style="color:var(--serenity); font-size:20px;">RM 0</b></div>
+            <div><small style="color:#BBB">🛒 本月支出</small><br><b id="mo-p" style="color:var(--rose); font-size:20px;">RM 0</b></div>
         </div>
         <div id="main-list"></div>
     </div>
 
     <div id="p-report" class="page">
+        <div class="filter-box">
+            <select id="f-year" class="filter-select" onchange="renderChart()"></select>
+            <select id="f-month" class="filter-select" onchange="renderChart()"></select>
+        </div>
         <div class="card-white">
-            <h3>🍕 資金比例</h3>
+            <h3 style="text-align:center; margin-bottom:20px;">🍕 收支比例分析</h3>
             <canvas id="dkChart" style="max-height: 250px;"></canvas>
         </div>
         <div id="acc-details"></div>
@@ -151,14 +156,14 @@
         <h3>新增紀錄 ✍️</h3>
         <small>📅 日期</small><input type="date" id="r-date">
         <small>🏦 帳戶</small>
-        <div class="tag-group">
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
             <div class="tag on" id="a-rhb" onclick="setA('RHB', this)">RHB</div>
             <div class="tag" id="a-hlb" onclick="setA('HLB', this)">HLB</div>
             <div class="tag" id="a-tng" onclick="setA('TNG', this)">TNG</div>
         </div>
-        <small>💎 儲蓄類</small><div id="ts" class="tag-group"></div>
-        <small>🛍️ 支出類</small><div id="tp" class="tag-group"></div>
-        <small>📦 網購狀態</small><div id="to" class="tag-group"></div>
+        <small>💎 儲蓄類</small><div id="ts"></div>
+        <small>🛍️ 支出類</small><div id="tp"></div>
+        <small>📦 網購狀態</small><div id="to"></div>
         <input type="number" id="r-amt" placeholder="金額 (RM)">
         <input type="text" id="r-note" placeholder="備註 (如: DK 專輯)">
         <button class="btn-go" onclick="saveR()">確認存入 🐴</button>
@@ -167,13 +172,33 @@
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('dk_grand_v15')) || { list: [], chal: null, rate: 350 };
+    let db = JSON.parse(localStorage.getItem('dk_grand_v16')) || { list: [], chal: null, rate: 350 };
     const cfg = {
         save: ['⚔️ 碩珉存錢', '🧧 意外收入'],
         spend: ['🎭 音樂劇', '💿 專輯', '✨ 小卡', '🛍️ 同款', '📦 郵費', '🍱 飯錢', '🚗 交通'],
         order: ['❌ 未付款', '✅ 已付款', '🚚 未到貨', '📦 已收貨']
     };
     let curA = 'RHB', curT = '', curType = 'save', myChart = null;
+
+    // 初始化年份月份下拉選單
+    function initFilters() {
+        const ySelect = document.getElementById('f-year');
+        const mSelect = document.getElementById('f-month');
+        const now = new Date();
+        
+        // 年份：從 2023 到 今年
+        for(let i = 2023; i <= now.getFullYear(); i++) {
+            let opt = new Option(i + " 年", i);
+            if(i === now.getFullYear()) opt.selected = true;
+            ySelect.add(opt);
+        }
+        // 月份：1-12
+        for(let i = 1; i <= 12; i++) {
+            let opt = new Option(i + " 月", i < 10 ? "0"+i : i);
+            if(i === (now.getMonth()+1)) opt.selected = true;
+            mSelect.add(opt);
+        }
+    }
 
     function nav(id, title, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -195,7 +220,7 @@
                 <span style="position:absolute; top:15px; right:20px;">✕</span>
                 <h3>⚔️ DK 一週挑戰 ⚔️</h3><div class="amt">RM ${saved.toFixed(2)}</div>
                 <div class="prog-bg"><div class="prog-fill" style="width:${p}%"></div></div>
-                <div class="card-stats"><span>目標 RM ${db.chal.target}</span><span>達成率 ${p.toFixed(0)}%</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700;"><span>目標 RM ${db.chal.target}</span><span>達成率 ${p.toFixed(0)}%</span></div>
             </div>`;
         }
 
@@ -215,24 +240,32 @@
                 </div>
             </div>
         `).join('');
-        localStorage.setItem('dk_grand_v15', JSON.stringify(db));
+        localStorage.setItem('dk_grand_v16', JSON.stringify(db));
     }
 
     function renderChart() {
+        const selY = document.getElementById('f-year').value;
+        const selM = document.getElementById('f-month').value;
+        const filterStr = `${selY}-${selM}`;
+
+        const filteredList = db.list.filter(i => i.date.startsWith(filterStr));
+        
+        const s = filteredList.filter(i => i.type==='save').reduce((a,b)=>a+b.amt, 0);
+        const p = filteredList.filter(i => i.type==='spend').reduce((a,b)=>a+b.amt, 0);
+
         const ctx = document.getElementById('dkChart').getContext('2d');
-        const s = db.list.filter(i => i.type==='save').reduce((a,b)=>a+b.amt, 0);
-        const p = db.list.filter(i => i.type==='spend').reduce((a,b)=>a+b.amt, 0);
         if(myChart) myChart.destroy();
         myChart = new Chart(ctx, {
             type: 'doughnut',
             data: { labels: ['存入', '支出'], datasets: [{ data: [s, p], backgroundColor: ['#92A8D1', '#F7CAC9'] }] },
             options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
         });
-        let h = '<h4>🏦 帳戶明細</h4>';
+
+        let h = `<h4>🏦 ${selM}月 帳戶變動</h4>`;
         ['RHB', 'HLB', 'TNG'].forEach(acc => {
-            const bal = db.list.filter(i => i.acc === acc).reduce((sum, i) => i.type==='save' ? sum+i.amt : sum-i.amt, 0);
+            const bal = filteredList.filter(i => i.acc === acc).reduce((sum, i) => i.type==='save' ? sum+i.amt : sum-i.amt, 0);
             h += `<div class="card-white" style="display:flex; justify-content:space-between; padding:15px; margin-bottom:10px;">
-                <span>${acc}</span><b style="color:var(--serenity)">RM ${bal.toFixed(2)}</b>
+                <span>${acc}</span><b style="color:var(--serenity)">${bal >= 0 ? '+' : ''}RM ${bal.toFixed(2)}</b>
             </div>`;
         });
         document.getElementById('acc-details').innerHTML = h;
@@ -243,7 +276,7 @@
         document.getElementById('r-date').value = new Date().toISOString().slice(0, 10);
         document.getElementById('ts').innerHTML = cfg.save.map(t => `<div class="tag" onclick="setT('${t}','save',this)">${t}</div>`).join('');
         document.getElementById('tp').innerHTML = cfg.spend.map(t => `<div class="tag" onclick="setT('${t}','spend',this)">${t}</div>`).join('');
-        document.getElementById('to').innerHTML = cfg.order.map(t => `<div class="tag order-tag" onclick="setT('${t}','spend',this)">${t}</div>`).join('');
+        document.getElementById('to').innerHTML = cfg.order.map(t => `<div class="tag" onclick="setT('${t}','spend',this)">${t}</div>`).join('');
     }
 
     function setA(a, el) { document.querySelectorAll('#a-rhb, #a-hlb, #a-tng').forEach(t => t.classList.remove('on')); el.classList.add('on'); curA = a; }
@@ -270,9 +303,10 @@
         r.onload = e => { db.list = XLSX.utils.sheet_to_json(XLSX.read(new Uint8Array(e.target.result), {type:'array'}).Sheets["Records"]); render(); alert("恢復成功！"); };
         r.readAsArrayBuffer(f.files[0]);
     }
-    function del(idx) { if(confirm("刪除？")) { db.list.splice(idx, 1); render(); } }
+    function del(idx) { if(confirm("刪除這筆紀錄嗎？")) { db.list.splice(idx, 1); render(); } }
     function closeAll() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
 
+    initFilters();
     fetch('https://api.exchangerate-api.com/v4/latest/MYR').then(r=>r.json()).then(d=>{
         db.rate = d.rates.KRW;
         document.getElementById('rate-val').innerText = `1 RM = ${db.rate.toFixed(2)} ₩`;
