@@ -3,145 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SVT Saver Ultimate</title>
+    <title>追星账本</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root { --rose: #F7CAC9; --serenity: #92A8D1; --bg: #F8FAFD; --text: #333C4E; --sub: #8E9AAF; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Noto Sans TC', sans-serif; }
-        
         body { margin: 0; background: var(--bg); color: var(--text); min-height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
         
-        /* 頂部區域 */
-        .app-header { padding: 45px 20px 10px; flex-shrink: 0; }
-        .header-row { display: flex; justify-content: space-between; align-items: center; }
-        .header-row h1 { font-size: 22px; margin: 0; color: var(--serenity); font-weight: 700; }
+        /* 頂部匯率 */
+        .app-header { padding: 45px 20px 10px; display: flex; justify-content: space-between; align-items: center; }
+        .app-header h1 { font-size: 22px; margin: 0; color: var(--serenity); font-weight: 700; }
         .live-rate { font-size: 11px; background: white; padding: 6px 12px; border-radius: 20px; color: var(--serenity); font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-        /* 進度卡片 */
+        /* 挑戰進度卡片 */
         .summary-card { margin: 15px 20px; padding: 25px; border-radius: 30px; background: linear-gradient(135deg, var(--serenity) 0%, var(--rose) 100%); color: white; box-shadow: 0 12px 28px rgba(146, 168, 209, 0.35); text-align: center; }
         .big-amt { font-size: 34px; font-weight: 700; margin: 8px 0; display: block; }
         .bar-bg { height: 12px; background: rgba(255,255,255,0.3); border-radius: 10px; overflow: hidden; margin: 15px 0; }
         .bar-fill { height: 100%; background: white; width: 0%; transition: 1s ease; }
 
-        /* 搜尋 */
-        .search-area { padding: 0 20px 15px; }
-        .search-bar { width: 100%; padding: 12px 18px; border-radius: 15px; border: none; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.04); outline: none; }
+        /* 月度分析報表 */
+        .report-section { margin: 5px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .report-box { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); text-align: center; }
+        .report-box small { font-size: 10px; color: var(--sub); display: block; margin-bottom: 2px; }
+        .report-box b { font-size: 16px; color: var(--text); }
 
-        /* 清單區域 (可滑動) */
-        .list-container { flex: 1; padding: 0 20px 220px; }
+        /* Excel 操作區 */
+        .excel-ops { padding: 10px 20px; display: flex; gap: 10px; }
+        .btn-excel { flex: 1; padding: 12px; border-radius: 15px; border: 1.5px solid var(--serenity); background: white; color: var(--serenity); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+
+        /* 清單區域 */
+        .list-container { flex: 1; padding: 10px 20px 240px; }
         .item-card { background: white; border-radius: 22px; padding: 18px; margin-bottom: 12px; display: flex; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .date-label { font-size: 10px; color: #AAA; font-weight: 700; }
 
-        /* 底部按鈕區 (符合要求：按鍵在下) */
-        .bottom-controls { position: fixed; bottom: 0; left: 0; width: 100%; background: white; padding: 15px 20px 35px; border-radius: 35px 35px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); z-index: 1000; }
-        .mode-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab-btn { flex: 1; padding: 14px; border-radius: 18px; border: none; background: #F1F5F9; color: var(--sub); font-weight: 700; font-size: 15px; }
+        /* 底部導覽 */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; padding: 15px 20px 35px; border-radius: 35px 35px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.08); z-index: 1000; }
+        .mode-tabs { display: flex; gap: 10px; }
+        .tab-btn { flex: 1; padding: 16px; border-radius: 20px; border: none; background: #F1F5F9; color: var(--sub); font-weight: 700; font-size: 15px; }
         .tab-btn.active { background: var(--serenity); color: white; }
-        .sync-btn { width: 100%; padding: 16px; border-radius: 20px; border: 2.5px solid var(--serenity); background: white; color: var(--serenity); font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
         /* 懸浮按鈕 */
-        .fab { position: fixed; bottom: 195px; right: 25px; width: 68px; height: 68px; background: linear-gradient(135deg, var(--rose), var(--serenity)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 35px; box-shadow: 0 10px 25px rgba(146, 168, 209, 0.4); z-index: 1001; }
+        .fab { position: fixed; bottom: 135px; right: 25px; width: 68px; height: 68px; background: linear-gradient(135deg, var(--rose), var(--serenity)); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 35px; box-shadow: 0 10px 25px rgba(146, 168, 209, 0.4); z-index: 1001; }
+
+        /* 快速貼示標籤 */
+        .tip-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 5px 0 15px; }
+        .tag-tip { padding: 8px 14px; background: #F1F5F9; border-radius: 12px; font-size: 13px; color: var(--serenity); font-weight: 700; }
 
         /* 彈窗 */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2000; backdrop-filter: blur(10px); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; backdrop-filter: blur(10px); }
         .modal-content { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 35px 35px 0 0; padding: 35px 25px 50px; }
-        input, select, textarea { width: 100%; padding: 16px; border: 2px solid #F1F5F9; border-radius: 15px; margin-bottom: 12px; outline: none; font-size: 16px; }
-        .confirm-btn { background: var(--serenity); color: white; border: none; width: 100%; padding: 18px; border-radius: 18px; font-weight: 700; font-size: 17px; }
+        input, select, textarea { width: 100%; padding: 16px; margin-bottom: 12px; border: 2px solid #F1F5F9; border-radius: 15px; font-size: 16px; outline: none; }
+        .save-btn { width: 100%; padding: 18px; background: var(--serenity); color: white; border: none; border-radius: 18px; font-weight: 700; font-size: 17px; }
     </style>
 </head>
 <body>
 
 <div class="app-header">
-    <div class="header-row">
-        <h1>SVT SAVER 💎</h1>
-        <div class="live-rate" id="rate-display" onclick="fetchRate()">🔄 載入匯率</div>
-    </div>
+    <h1>SVT SAVER 💎</h1>
+    <div class="live-rate" id="rate-display">載入匯率中...</div>
 </div>
 
 <div class="summary-card">
-    <div style="font-size: 14px; opacity: 0.9;">本週儲蓄進度</div>
+    <small id="challenge-title">2026 儲蓄挑戰 (目標 RM 5000)</small>
     <span class="big-amt" id="total-saved">RM 0.00</span>
     <div class="bar-bg"><div class="bar-fill" id="bar-fill"></div></div>
     <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700;">
-        <span>挑戰目標 200</span>
-        <span id="progress-text">RM 0 / 200</span>
+        <span id="target-text">進度: 0%</span>
+        <span>目標 RM 5,000</span>
     </div>
 </div>
 
-<div class="search-area">
-    <input type="text" id="search-input" class="search-bar" placeholder="🔍 搜尋記錄..." oninput="render()">
+<div class="report-section">
+    <div class="report-box"><small>本月儲蓄</small><b id="month-save">RM 0</b></div>
+    <div class="report-box"><small>本月支出</small><b id="month-spend">RM 0</b></div>
+</div>
+
+<div class="excel-ops">
+    <button class="btn-excel" onclick="exportExcel()">📤 匯出 Excel</button>
+    <button class="btn-excel" onclick="document.getElementById('file-in').click()">📥 匯入 Excel</button>
+    <input type="file" id="file-in" style="display:none" onchange="importExcel(this)">
 </div>
 
 <div class="list-container" id="list"></div>
 
-<div class="bottom-controls">
+<div class="fab" onclick="openModal()">+</div>
+
+<div class="bottom-nav">
     <div class="mode-tabs">
         <button class="tab-btn active" id="tab-save" onclick="setMode('儲蓄')">💰 儲蓄清單</button>
         <button class="tab-btn" id="tab-spend" onclick="setMode('支出')">🛍️ 支出清單</button>
     </div>
-    <button class="sync-btn" onclick="syncAllToSheet()"><span>☁️ 同步至 Google Sheet</span></button>
 </div>
-
-<div class="fab" onclick="openModal()">+</div>
 
 <div class="modal" id="modal">
     <div class="modal-content">
-        <h3>新增記錄 💎</h3>
+        <h3 style="margin:0 0 15px 0;">記帳 💎</h3>
         <input type="date" id="in-date">
-        <select id="in-tag" onchange="checkBank(this.value)"></select>
-        <div id="bank-sub-group" style="display:none;"><select id="in-bank-type"><option value="HLB">🏦 Hong Leong Bank</option><option value="RHB">🏦 RHB Bank</option></select></div>
-        <input type="number" id="in-rm" placeholder="金額 (RM)">
+        
+        <select id="in-tag"></select>
+        
+        <div style="font-size:12px; color:#AAA; margin-bottom:5px; font-weight:700;">快速貼示 (點擊填入備註)：</div>
+        <div class="tip-tags" id="tip-container"></div>
+        
+        <input type="number" id="in-rm" placeholder="金額 RM">
         <textarea id="in-note" placeholder="備註..." rows="2"></textarea>
-        <div id="spend-status-group" style="display:none; gap:10px;">
-            <select id="in-pay" style="flex:1"><option value="未付款">❌ 未付款</option><option value="已付款">✅ 已付款</option></select>
-            <select id="in-ship" style="flex:1"><option value="未到貨">🚚 未到貨</option><option value="已到貨">📦 已到貨</option></select>
-        </div>
-        <button class="confirm-btn" onclick="save()">確認保存</button>
+        
+        <button class="save-btn" onclick="save()">確認保存</button>
         <button onclick="closeModal()" style="width:100%; border:none; background:none; color:#AAA; margin-top:15px;">取消</button>
     </div>
 </div>
 
 <script>
-    const SHEET_URL = "https://script.google.com/macros/s/AKfycbwJSiq6UAkiDjHspCz0-5KqNP1nm28EsQVGzt6TPtoJxDcM-eMwdC1SbDuY3J8dGsj4RA/exec";
-
-    let db = JSON.parse(localStorage.getItem('svt_2026_final_fix')) || {
-        list: [], rate: 300, currentMode: '儲蓄',
-        tagsSave: ['🏦 銀行', '📱 TNG', '💵 現金'],
-        tagsSpend: ['✨ 小卡', '🎵 專輯', '✈️ 郵費', '🧸 周邊']
+    // --- 【自由管理區域】 ---
+    // 你可以在這裡自由增加或修改標籤
+    let db = JSON.parse(localStorage.getItem('svt_2026_final')) || {
+        list: [], 
+        rate: 310, 
+        currentMode: '儲蓄',
+        // 儲蓄模式的大分類標籤
+        tagsSave: ['🏦 銀行存入', '📱 TNG 轉入', '💵 現金儲蓄', '🧧 紅包/獎金'],
+        // 支出模式的大分類標籤
+        tagsSpend: ['🛍️ 官網周邊', '💿 專輯代購', '✨ 小卡交易', '✈️ 國際郵費', '🍱 生活支出'],
+        // 快速備註貼示 (點了直接進備註)
+        tipsSave: ['工資', '兼職收入', '生日紅包', '定期存款'],
+        tipsSpend: ['珉奎小卡', '淨漢周邊', 'FML專輯', '日本代購']
     };
 
     async function fetchRate() {
         try {
             const res = await fetch('https://api.exchangerate-api.com/v4/latest/MYR');
             const data = await res.json();
-            if(data.rates.KRW) { db.rate = data.rates.KRW; document.getElementById('rate-display').innerText = `1 RM = ${db.rate.toFixed(2)} ₩`; render(); }
+            db.rate = data.rates.KRW;
+            document.getElementById('rate-display').innerText = `1 RM = ${db.rate.toFixed(2)} ₩`;
         } catch(e) { document.getElementById('rate-display').innerText = `1 RM = ${db.rate} ₩ (離線)`; }
+        render();
     }
 
-    function checkBank(v) { document.getElementById('bank-sub-group').style.display = (v === '🏦 銀行') ? 'block' : 'none'; }
-    function setMode(m) { db.currentMode = m; render(); }
+    function setMode(m) {
+        db.currentMode = m;
+        render();
+    }
 
     function render() {
+        // 更新按鈕狀態
         document.getElementById('tab-save').className = db.currentMode === '儲蓄' ? 'tab-btn active' : 'tab-btn';
         document.getElementById('tab-spend').className = db.currentMode === '支出' ? 'tab-btn active' : 'tab-btn';
         
-        const search = document.getElementById('search-input').value.toLowerCase();
-        const filtered = db.list.filter(i => i.mode === db.currentMode && (i.note.toLowerCase().includes(search) || i.date.includes(search)));
-        
-        const weekSave = db.list.filter(i => i.mode === '儲蓄').reduce((a,b) => a + b.amt, 0);
-        document.getElementById('total-saved').innerText = `RM ${weekSave.toFixed(2)}`;
-        document.getElementById('bar-fill').style.width = Math.min((weekSave/200)*100, 100) + '%';
-        document.getElementById('progress-text').innerText = `RM ${weekSave.toFixed(0)} / 200`;
+        const now = new Date();
+        const monthStr = now.toISOString().slice(0, 7);
 
+        // 功能 1：計算總進度 (挑戰還在)
+        const totalSaved = db.list.filter(i=>i.mode==='儲蓄').reduce((a,b)=>a+b.amt, 0);
+        document.getElementById('total-saved').innerText = `RM ${totalSaved.toFixed(2)}`;
+        const prog = Math.min((totalSaved/5000)*100, 100);
+        document.getElementById('bar-fill').style.width = prog + '%';
+        document.getElementById('target-text').innerText = `進度: ${prog.toFixed(1)}%`;
+
+        // 功能 2：計算月度報表 (報表還在)
+        const mSave = db.list.filter(i=>i.mode==='儲蓄' && i.date.startsWith(monthStr)).reduce((a,b)=>a+b.amt, 0);
+        const mSpend = db.list.filter(i=>i.mode==='支出' && i.date.startsWith(monthStr)).reduce((a,b)=>a+b.amt, 0);
+        document.getElementById('month-save').innerText = `RM ${mSave.toFixed(0)}`;
+        document.getElementById('month-spend').innerText = `RM ${mSpend.toFixed(0)}`;
+
+        // 功能 3：渲染清單 (KRW 換算還在)
+        const filtered = db.list.filter(i => i.mode === db.currentMode);
         document.getElementById('list').innerHTML = filtered.map((i, idx) => `
             <div class="item-card" onclick="deleteItem(${db.list.indexOf(i)})">
                 <div style="flex:1">
-                    <span class="date-label">${i.date}</span>
-                    <div style="font-weight:700; font-size:16px;">${i.note}</div>
-                    <div>
-                        ${i.bankType ? `<span style="font-size:9px; color:var(--serenity); font-weight:700;">${i.bankType}</span>` : ''}
-                        ${i.mode === '支出' ? `<small style="color:${i.payStatus==='未付款'?'#FF6B6B':'#059669'}; font-weight:700;">${i.payStatus} | ${i.shipStatus}</small>` : ''}
-                    </div>
+                    <small style="color:#AAA; font-weight:700;">${i.date} • ${i.tag}</small>
+                    <div style="font-weight:700; margin-top:4px; font-size:16px;">${i.note}</div>
                 </div>
                 <div style="text-align:right">
                     <b style="color:${i.mode==='儲蓄'?'#333':'#FF6B6B'}; font-size:17px;">RM ${i.amt.toFixed(2)}</b>
@@ -149,16 +179,25 @@
                 </div>
             </div>
         `).join('');
-        localStorage.setItem('svt_2026_final_fix', JSON.stringify(db));
+        localStorage.setItem('svt_2026_final', JSON.stringify(db));
     }
 
     function openModal() {
         document.getElementById('modal').style.display = 'block';
         document.getElementById('in-date').valueAsDate = new Date();
+        
+        // 功能 4：這裡動態載入你可以自由修改的標籤
         const tags = db.currentMode === '儲蓄' ? db.tagsSave : db.tagsSpend;
-        document.getElementById('in-tag').innerHTML = tags.map(t => `<option>${t}</option>`).join('');
-        document.getElementById('spend-status-group').style.display = (db.currentMode === '支出') ? 'flex' : 'none';
-        checkBank(document.getElementById('in-tag').value);
+        document.getElementById('in-tag').innerHTML = tags.map(t=>`<option value="${t}">${t}</option>`).join('');
+        
+        // 功能 5：快速備註貼示還在
+        const tips = db.currentMode === '儲蓄' ? db.tipsSave : db.tipsSpend;
+        document.getElementById('tip-container').innerHTML = tips.map(t=>`<div class="tag-tip" onclick="addTip('${t}')">${t}</div>`).join('');
+    }
+
+    function addTip(t) {
+        const note = document.getElementById('in-note');
+        note.value = note.value ? note.value + ', ' + t : t;
     }
 
     function save() {
@@ -166,26 +205,33 @@
         const note = document.getElementById('in-note').value;
         const date = document.getElementById('in-date').value;
         if(!amt || !note) return alert("請填寫金額與備註");
-        db.list.unshift({ date, mode: db.currentMode, amt, tag: document.getElementById('in-tag').value, bankType: document.getElementById('in-bank-type').value, payStatus: document.getElementById('in-pay').value, shipStatus: document.getElementById('in-ship').value, note });
+        db.list.unshift({ date, mode: db.currentMode, amt, tag: document.getElementById('in-tag').value, note });
         render(); closeModal();
         document.getElementById('in-rm').value = ''; document.getElementById('in-note').value = '';
     }
 
-    async function syncAllToSheet() {
-        if(db.list.length === 0) return alert("沒有記錄");
-        const btn = document.querySelector('.sync-btn');
-        btn.innerText = "⏳ 同步中...";
-        try {
-            const latest = db.list[0];
-            await fetch(SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({...latest, krw: Math.round(latest.amt * db.rate)}) });
-            alert("✅ 同步指令已發送！");
-        } catch(e) { alert("❌ 同步失敗"); }
-        finally { btn.innerText = "☁️ 同步至 Google Sheet"; }
+    // 功能 6：Excel 匯出匯入 (保證還在)
+    function exportExcel() {
+        const ws = XLSX.utils.json_to_sheet(db.list);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Data");
+        XLSX.writeFile(wb, `SVT_Saver_Backup.xlsx`);
     }
 
-    function deleteItem(idx) { if(confirm("確定刪除嗎？")) { db.list.splice(idx, 1); render(); } }
+    function importExcel(input) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            if(confirm(`確認匯入？`)) { db.list = [...rows, ...db.list]; render(); }
+        };
+        reader.readAsArrayBuffer(input.files[0]);
+    }
+
+    function deleteItem(idx) { if(confirm("確定刪除？")) { db.list.splice(idx, 1); render(); } }
     function closeModal() { document.getElementById('modal').style.display = 'none'; }
-    window.onload = () => { fetchRate(); render(); };
+    window.onload = () => fetchRate();
 </script>
 </body>
 </html>
