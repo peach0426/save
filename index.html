@@ -23,7 +23,7 @@
   --pending:#F1F3F4;
 }
 *{box-sizing:border-box; font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;}
-body,html{margin:0;padding:0;width:100%;height:100%;background:var(--cream);color:var(--text);overflow:hidden;position:fixed;transition:0.3s;}
+body,html{margin:0;padding:0;width:100%;height:100%;background:var(--cream);color:var(--text);transition:0.3s;overflow:hidden;position:fixed;}
 .dark{background:#121212;color:#EEE;}
 .app-header{padding:45px 20px 20px;background:white;border-radius:0 0 40px 40px;box-shadow:0 5px 15px rgba(0,0,0,0.05);position:relative;transition:0.3s;}
 .dark .app-header{background:#1E1E1E;color:#EEE;}
@@ -49,7 +49,7 @@ body,html{margin:0;padding:0;width:100%;height:100%;background:var(--cream);colo
 input,select{width:100%;padding:14px;margin:8px 0;border-radius:15px;border:1.5px solid #F0F0F0;background:#F9FBFF;font-size:15px;outline:none;}
 .btn-action{width:100%;padding:16px;border:none;border-radius:18px;font-weight:bold;color:white;font-size:16px;margin-top:10px;cursor:pointer;transition:0.2s;}
 .btn-action:active{transform:scale(0.97);}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;backdrop-filter:blur(5px);}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;backdrop-filter:blur(5px);overflow-y:auto;}
 .modal-con{position:absolute;bottom:0;width:100%;background:white;border-radius:35px 35px 0 0;padding:25px;max-height:90vh;overflow-y:auto;transition:0.3s;}
 </style>
 </head>
@@ -90,7 +90,7 @@ input,select{width:100%;padding:14px;margin:8px 0;border-radius:15px;border:1.5p
 <h3>📊 月度報表</h3>
 <select id="month-sel" onchange="initChart()"></select>
 <div style="height:180px;"><canvas id="monthChart"></canvas></div>
-<div id="month-summary" style="text-align:center;font-size:12px;margin-top:15px;"></div>
+<div id="month-summary" style="text-align:center;font-size:12px;margin-top:15px"></div>
 </div>
 
 <h3>🌻 歷史記錄</h3>
@@ -148,26 +148,40 @@ input,select{width:100%;padding:14px;margin:8px 0;border-radius:15px;border:1.5p
 // === 初始化資料與設定 ===
 let db = JSON.parse(localStorage.getItem('dk_final_ultimate'))||{list:[],challenge:null,chalHistory:[]};
 const CFG={acc:['RHB','HLB','TNG'],save:['⚔️ 碩珉存錢','🧧 意外收入','💰 工資'],spend:['💿 專輯','✨ 小卡','🎭 音樂劇','🛍️ 同款','📦 郵費','🍱 飯錢'],order:['❌ 未付','✅ 已付','🚚 運送中','📦 已收']};
-let curT='save',curTag='',curAcc='RHB',curOrder='✅ 已付',editIdx=-1,liveRate=310;
-let myChart=null;
+let curT='save',curTag='',curAcc=CFG.acc[0],curOrder=CFG.order[1],editIdx=-1,liveRate=310,myChart=null;
 
-// --- Excel 導出 ---
+// --- Excel 導出（美化版） ---
 function doExport(){
   const filter=document.getElementById('export-month-sel').value;
   let rawData=filter==='all'?[...db.list]:db.list.filter(i=>i.date.startsWith(filter));
-  rawData.sort((a,b)=>(a.type===b.type)?0:(a.type==='save'? -1:1));
+  rawData.sort((a,b)=> new Date(b.date)-new Date(a.date));
+
   const excelData=rawData.map(i=>({
-    '📅 日期':i.date,
-    '🏷️ 類別':(i.type==='save'?'🟢 ':'🔴 ')+i.tag,
-    '💰 金額(RM)':i.amt,
-    '🏦 賬戶':i.acc,
-    '🚚 狀態':i.order||'-',
-    '🛒 來源':i.source||'-',
-    '📝 備註':i.note||''
+    '📅 日期': i.date,
+    '🏷️ 類別': (i.type==='save'?'🟢 ':'🔴 ')+i.tag,
+    '💰 金額(RM)': i.amt,
+    '🏦 賬戶': i.acc,
+    '🚚 狀態': i.order||'-',
+    '🛒 來源': i.source||'-',
+    '📝 備註': i.note||''
   }));
-  const ws=XLSX.utils.json_to_sheet(excelData);
+
+  const header = ["📅 日期","🏷️ 類別","💰 金額(RM)","🏦 賬戶","🚚 狀態","🛒 來源","📝 備註"];
+  const ws = XLSX.utils.json_to_sheet(excelData, {header});
+  const range = XLSX.utils.decode_range(ws['!ref']);
+
+  for(let C=range.s.c; C<=range.e.c; ++C){
+    const cell = ws[XLSX.utils.encode_cell({r:0, c:C})];
+    if(!cell.s) cell.s={};
+    cell.s = { font:{bold:true,color:{rgb:"FFFFFF"}}, fill:{fgColor:{rgb:"92A8D1"}}, alignment:{horizontal:"center"} };
+  }
+
+  for(let R=1; R<=range.e.r; ++R){
+    const amtCell = ws[XLSX.utils.encode_cell({r:R, c:2})];
+    if(amtCell) amtCell.z = "#,##0.00";
+  }
+
   ws['!cols']=[{wch:12},{wch:18},{wch:12},{wch:10},{wch:10},{wch:15},{wch:25}];
-  const range=XLSX.utils.decode_range(ws['!ref']);
   ws['!autofilter']={ref:XLSX.utils.encode_range(range)};
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"DK_理財報表");
@@ -175,14 +189,8 @@ function doExport(){
 }
 
 // --- 匯率 ---
-function fetchRate(){
-  fetch('https://api.exchangerate-api.com/v4/latest/MYR').then(r=>r.json()).then(d=>{
-    liveRate=d.rates.KRW;
-    document.getElementById('rate-display').innerText=`1 RM = ${liveRate.toFixed(0)} ₩`;
-  });
-}
-fetchRate();
-setInterval(fetchRate,60000); // 自動刷新
+function fetchRate(){ fetch('https://api.exchangerate-api.com/v4/latest/MYR').then(r=>r.json()).then(d=>{ liveRate=d.rates.KRW; document.getElementById('rate-display').innerText=`1 RM = ${liveRate.toFixed(0)} ₩`; }); }
+fetchRate(); setInterval(fetchRate,60000);
 
 // --- 分頁導航 ---
 function navTo(id,el){
@@ -196,29 +204,12 @@ function navTo(id,el){
 }
 
 // --- KRW 轉換 ---
-function convertKrw(){const krw=parseFloat(document.getElementById('f-krw').value);if(!krw)return;document.getElementById('f-amt').value=(krw/liveRate).toFixed(2);}
+function convertKrw(){const krw=parseFloat(document.getElementById('f-krw').value)||0;document.getElementById('f-amt').value=(krw/liveRate).toFixed(2);}
 
 // --- 挑戰功能 ---
-function updateDailyAmt(){
-  const amt=parseFloat(document.getElementById('target-amt').value)||0;
-  if(!db.challenge) document.getElementById('daily-suggest').innerText=`RM ${(amt/7).toFixed(2)}`;
-}
-function startChal(){
-  const amt=parseFloat(document.getElementById('target-amt').value);
-  if(!amt) return alert("請輸入目標金額");
-  const start=new Date(),end=new Date(); end.setDate(start.getDate()+6);
-  db.challenge={target:amt,start:start.toISOString().slice(0,10),end:end.toISOString().slice(0,10)};
-  save(); updateChalUI();
-}
-function cancelChal(isCancel){
-  const c=db.challenge;
-  if(!c) return;
-  if(isCancel){db.challenge=null; save(); updateChalUI(); return;}
-  const saved=db.list.filter(i=>i.type==='save'&&i.date>=c.start&&i.date<=c.end).reduce((a,b)=>a+b.amt,0);
-  const perc=((saved/c.target)*100).toFixed(1);
-  db.chalHistory.unshift({...c,saved,perc});
-  db.challenge=null; save(); updateChalUI(); renderChalHistory();
-}
+function updateDailyAmt(){const amt=parseFloat(document.getElementById('target-amt').value)||0;if(!db.challenge) document.getElementById('daily-suggest').innerText=`RM ${(amt/7).toFixed(2)}`;}
+function startChal(){const amt=parseFloat(document.getElementById('target-amt').value);if(!amt) return alert("請輸入目標金額"); const start=new Date(),end=new Date(); end.setDate(start.getDate()+6); db.challenge={target:amt,start:start.toISOString().slice(0,10),end:end.toISOString().slice(0,10)}; save(); updateChalUI();}
+function cancelChal(isCancel){const c=db.challenge;if(!c) return;if(isCancel){db.challenge=null; save(); updateChalUI(); return;} const saved=db.list.filter(i=>i.type==='save'&&i.date>=c.start&&i.date<=c.end).reduce((a,b)=>a+b.amt,0); const perc=((saved/c.target)*100).toFixed(1); db.chalHistory.unshift({...c,saved,perc}); db.challenge=null; save(); updateChalUI(); renderChalHistory();}
 function updateChalUI(){
   const s=document.getElementById('chal-setup');
   const a=document.getElementById('chal-active');
@@ -238,14 +229,21 @@ function updateChalUI(){
   document.getElementById('daily-amt').innerText=`RM ${daily.toFixed(2)}`;
 }
 function renderChalHistory(){
-  const html=db.chalHistory.map(c=>`<div class="item-card">${c.start}~${c.end} | 儲蓄 ${c.saved.toFixed(2)}RM | 達成 ${c.perc}%</div>`).join('');
+  let html='<button class="btn-action" style="background:#EF5350;margin-bottom:10px;" onclick="clearChalHistory()">清空所有挑戰歷史</button>';
+  html+=db.chalHistory.map((c,idx)=>`<div class="item-card">${c.start}~${c.end} | 儲蓄 ${c.saved.toFixed(2)}RM | 達成 ${c.perc}% <button style="background:#EF5350;color:white;border:none;border-radius:10px;padding:4px 8px;margin-left:8px;cursor:pointer;" onclick="delChalHistory(${idx})">刪除</button></div>`).join('');
   document.getElementById('chal-history-list').innerHTML=html;
 }
+function delChalHistory(idx){db.chalHistory.splice(idx,1); save(); renderChalHistory();}
+function clearChalHistory(){if(confirm("確定清空所有挑戰歷史？")){db.chalHistory=[]; save(); renderChalHistory();}}
 
 // --- 記錄/歷史 ---
-function openAdd(){document.getElementById('modal-add').style.display='block';}
+function openAdd(){document.getElementById('modal-add').style.display='block'; populateTags(); populateAcc(); populateOrder();}
 function closeAdd(){document.getElementById('modal-add').style.display='none'; editIdx=-1; document.getElementById('btn-del').style.display='none';}
-function setT(t){curT=t; document.getElementById('ts').style.background=t==='save'? 'var(--serenity)':'#eee'; document.getElementById('ts').style.color=t==='save'?'#fff':'#999'; document.getElementById('tp').style.background=t==='spend'?'#eee':'#eee'; document.getElementById('tp').style.color=t==='spend'?'#999':'#999'; document.getElementById('row-spend').style.display=t==='spend'?'block':'none';}
+function setT(t){curT=t; document.getElementById('ts').style.background=t==='save'? 'var(--serenity)':'#eee'; document.getElementById('ts').style.color=t==='save'?'#fff':'#999'; document.getElementById('tp').style.background=t==='spend'?'#eee':'#eee'; document.getElementById('tp').style.color=t==='spend'?'#999':'#999'; document.getElementById('row-spend').style.display=t==='spend'?'block':'none'; populateTags(); populateOrder();}
+function populateTags(){ const bx=document.getElementById('bx-tag'); bx.innerHTML=''; const tags = curT==='save'? CFG.save:CFG.spend; tags.forEach(t=>{ const el=document.createElement('div'); el.className='tag'+(t===curTag? (curT==='save'?' sel-s':' sel-p'):''); el.innerText=t; el.onclick=()=>{curTag=t; populateTags();}; bx.appendChild(el); }); }
+function populateAcc(){ const bx=document.getElementById('bx-acc'); bx.innerHTML=''; CFG.acc.forEach(a=>{ const el=document.createElement('div'); el.className='tag'+(a===curAcc?' sel-s':''); el.innerText=a; el.onclick=()=>{curAcc=a; populateAcc();}; bx.appendChild(el); }); }
+function populateOrder(){ const bx=document.getElementById('bx-order'); bx.innerHTML=''; if(curT==='spend'){ CFG.order.forEach(o=>{ const el=document.createElement('div'); el.className='tag'+(o===curOrder?' sel-p':''); el.innerText=o; el.onclick=()=>{curOrder=o; populateOrder();}; bx.appendChild(el); }); } }
+
 function saveRec(){
   const d=document.getElementById('f-date').value, amt=parseFloat(document.getElementById('f-amt').value), note=document.getElementById('f-note').value, source=document.getElementById('f-source').value||'', order=curT==='spend'?curOrder:'';
   const tag=curTag||'一般', acc=curAcc;
@@ -261,7 +259,10 @@ function renderList(){
   const html=filtered.map((i,idx)=>`<div class="item-card ${i.type==='spend'?'is-spend':''}" onclick="editRec(${idx})">${i.date} | ${i.tag} | RM ${i.amt} | ${i.acc}</div>`).join('');
   document.getElementById('list-render').innerHTML=html;
 }
-function editRec(idx){editIdx=idx; const r=db.list[idx]; document.getElementById('f-date').value=r.date; document.getElementById('f-amt').value=r.amt; document.getElementById('f-note').value=r.note||''; document.getElementById('f-source').value=r.source||''; setT(r.type); document.getElementById('btn-del').style.display='block'; openAdd();}
+function editRec(idx){
+  editIdx=idx; const r=db.list[idx];
+  document.getElementById('f-date').value=r.date; document.getElementById('f-amt').value=r.amt; document.getElementById('f-note').value=r.note||''; document.getElementById('f-source').value=r.source||''; curT=r.type; curTag=r.tag; curAcc=r.acc; curOrder=r.order||CFG.order[1]; setT(r.type); document.getElementById('btn-del').style.display='block'; openAdd();
+}
 function save(){localStorage.setItem('dk_final_ultimate',JSON.stringify(db));}
 
 // --- 月度圓餅圖 ---
@@ -286,9 +287,17 @@ function populateMonthExport(){
   const months=[...new Set(db.list.map(i=>i.date.slice(0,7)))].sort((a,b)=>b.localeCompare(a));
   sel.innerHTML='<option value="all">全部月份</option>'+months.map(m=>`<option value="${m}">${m}</option>`).join('');
 }
-function doImport(f){const r=new FileReader(); r.onload=e=>{const d=XLSX.read(e.target.result,{type:'binary'}); const json=XLSX.utils.sheet_to_json(d.Sheets[d.SheetNames[0]]); json.forEach(i=>{db.list.push({date:i['📅 日期'],type:i['🏷️ 類別'].startsWith('🟢')?'save':'spend',tag:i['🏷️ 類別'].slice(2),amt:i['💰 金額(RM)'],acc:i['🏦 賬戶'],order:i['🚚 狀態'],source:i['🛒 來源'],note:i['📝 備註']});}); save(); renderList(); initChart(); populateMonthSel();}; r.readAsBinaryString(f.files[0]);}
+function doImport(f){
+  const r=new FileReader();
+  r.onload=e=>{
+    const d=XLSX.read(e.target.result,{type:'binary'});
+    const json=XLSX.utils.sheet_to_json(d.Sheets[d.SheetNames[0]]);
+    json.forEach(i=>{db.list.push({date:i['📅 日期'],type:i['🏷️ 類別'].startsWith('🟢')?'save':'spend',tag:i['🏷️ 類別'].slice(2),amt:i['💰 金額(RM)'],acc:i['🏦 賬戶'],order:i['🚚 狀態'],source:i['🛒 來源'],note:i['📝 備註']});});
+    save(); renderList(); initChart(); populateMonthSel();
+  };
+  r.readAsBinaryString(f.files[0]);
+}
 function clearAll(){if(confirm("確定清空所有數據？")){db={list:[],challenge:null,chalHistory:[]}; save(); renderList(); initChart(); populateMonthSel(); updateChalUI(); renderChalHistory();}}
-function convertKrw(){const krw=parseFloat(document.getElementById('f-krw').value)||0;document.getElementById('f-amt').value=(krw/liveRate).toFixed(2);}
 
 // --- 初始化 ---
 navTo('chal');
