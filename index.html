@@ -3,48 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>理財大滿貫 ⚔️💎</title>
 
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-<!-- 桌面 / 手機快捷方式 icon -->
+<!-- 桌面/手機快捷方式 icon -->
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" href="icon.png">
 
-<title>理財大滿貫 ⚔️💎</title>
+<!-- 字體 -->
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans&display=swap" rel="stylesheet">
 
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 
 <style>
-:root { --serenity: #92A8D1; --rose: #F7CAC9; --cream: #FFFDF9; --text: #546E7A; --pending: #F1F3F4; }
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'ZCOOL KuaiLe', cursive; }
-body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--cream); color: var(--text); overflow: hidden; position: fixed; }
+:root {
+  --serenity: #92A8D1;
+  --rose: #F7CAC9;
+  --cream: #FFFDF9;
+  --text: #546E7A;
+  --pending: #F1F3F4;
+  --warm: rgba(146,168,209,0.2);
+}
 
-/* 標題 */
-.app-header { padding: 45px 20px 20px; background: white; border-radius: 0 0 40px 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); z-index: 100; position: relative; }
-.app-header h1 { font-size: 18px; margin: 0; color: var(--serenity); display: flex; align-items: center; justify-content: space-between; }
+* { box-sizing: border-box; font-family: 'ZCOOL KuaiLe', 'Noto Sans', cursive; -webkit-tap-highlight-color: transparent; }
 
-/* 主內容 */
+body, html {
+  margin: 0; padding: 0; width: 100%; height: 100%; background: var(--cream); color: var(--text); overflow: hidden; position: fixed;
+}
+
+.app-header {
+  padding: 45px 20px 20px; background: white; border-radius: 0 0 40px 40px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05); z-index: 100; position: relative;
+}
+.app-header h1 {
+  font-size: 18px; margin: 0; color: var(--serenity);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
 .content-container { height: calc(100vh - 180px); overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
-.card-white { background: white; padding: 20px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
 
-.item-card { background: white; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-radius: 20px; border-left: 8px solid var(--serenity); transition: 0.3s; }
+.card-white { background: white; padding: 20px; margin-bottom: 20px; border-radius: 25px; box-shadow: 0 5px 15px var(--warm); }
+
+.item-card {
+  background: white; padding: 15px; margin-bottom: 10px; display: flex;
+  justify-content: space-between; align-items: center; border-radius: 20px;
+  border-left: 8px solid var(--serenity); transition: 0.3s;
+}
 .item-card.is-spend { border-left-color: var(--rose); }
 .item-card.is-pending { background: var(--pending); border-left-style: dashed; }
 
 .progress-bg { background: #eee; height: 18px; border-radius: 10px; margin: 12px 0; overflow: hidden; }
 .progress-fill { background: linear-gradient(90deg, var(--serenity), var(--rose)); height: 100%; width: 0%; transition: 0.8s; }
 
-.footer-nav { position: fixed; bottom: 0; width: 100%; height: 85px; background: white; display: flex; border-radius: 30px 30px 0 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); padding-bottom: env(safe-area-inset-bottom); }
-.nav-link { flex: 1; text-align: center; padding-top: 15px; color: #CFD8DC; font-size: 12px; }
+.footer-nav {
+  position: fixed; bottom: 0; width: 100%; height: 85px; background: white;
+  display: flex; border-radius: 30px 30px 0 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-link { flex: 1; text-align: center; padding-top: 15px; color: #CFD8DC; font-size: 12px; cursor:pointer; }
 .nav-link.active { color: var(--serenity); font-weight: bold; }
-.nav-link i { font-size: 24px; display: block; margin-bottom: 4px; font-style: normal; }
+.nav-link i { font-size: 24px; display: block; margin-bottom: 4px; }
 
-.add-btn { position: fixed; bottom: 100px; right: 25px; width: 65px; height: 65px; background: linear-gradient(135deg, var(--serenity), var(--rose)); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 35px; box-shadow: 0 8px 15px rgba(146,168,209,0.4); z-index: 500; }
+.add-btn {
+  position: fixed; bottom: 100px; right: 25px; width: 65px; height: 65px;
+  background: linear-gradient(135deg, var(--serenity), var(--rose)); border-radius: 50%;
+  color: white; display: flex; align-items: center; justify-content: center; font-size: 35px;
+  box-shadow: 0 8px 15px var(--warm); z-index: 500; cursor:pointer;
+}
 
-.tag { padding: 8px 12px; background: #F5F7F9; border-radius: 10px; font-size: 13px; color: #78909C; margin: 4px; display: inline-block; }
+.tag { padding: 8px 12px; background: #F5F7F9; border-radius: 10px; font-size: 13px; color: #78909C; margin: 4px; display: inline-block; cursor:pointer; }
 .tag.sel-s { background: var(--serenity) !important; color: white !important; }
 .tag.sel-p { background: var(--rose) !important; color: white !important; }
 
@@ -54,115 +81,266 @@ input, select { width: 100%; padding: 14px; margin: 8px 0; border-radius: 15px; 
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; backdrop-filter: blur(5px); }
 .modal-con { position: absolute; bottom: 0; width: 100%; background: white; border-radius: 35px 35px 0 0; padding: 25px; max-height: 90vh; overflow-y: auto; }
 
-/* 深色模式 */
-body.dark { background: #1E1E1E; color: #E0E0E0; }
-body.dark .app-header { background: #2A2A2A; color: var(--serenity); }
-body.dark .card-white { background: #2B2B2B; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-body.dark .nav-link { color: #777; }
-body.dark .nav-link.active { color: var(--serenity); }
-body.dark .add-btn { box-shadow: 0 8px 15px rgba(146,168,209,0.6); }
+body.dark {
+  background:#0f172a;
+  color:#E5E7EB;
+}
+body.dark .app-header { background:#1E293B; color:#E5E7EB; }
+body.dark .card-white { background:#1E293B; color:#E5E7EB; }
+body.dark .item-card { background:#1E293B; color:#E5E7EB; }
+body.dark .footer-nav { background:#111827; border-color:#374151; }
 </style>
 </head>
 
 <body>
 <div class="app-header">
-    <h1>DK 理財挑戰 ⚔️ <span id="rate-display">1 RM = ... ₩</span></h1>
+  <h1>DK 理財挑戰 ⚔️ <span id="rate-display">1 RM = ... ₩</span></h1>
 </div>
 
 <div class="content-container">
-    <!-- 挑戰頁 -->
-    <div id="p-chal" class="page">
-        <div class="card-white" id="chal-setup">
-            <h3>🎯 開啟一周存錢挑戰</h3>
-            <input type="number" id="target-amt" placeholder="輸入本周目標金額 (RM)">
-            <button class="btn-action" style="background:var(--serenity)" onclick="startChal()">挑戰開始 ⚔️</button>
-        </div>
-        <div class="card-white" id="chal-active" style="display:none">
-            <h3>⚔️ 一周挑戰進行中</h3>
-            <div id="chal-dates" style="font-size:11px; color:#999; margin:5px 0;"></div>
-            <div class="progress-bg"><div id="progress-bar" class="progress-fill"></div></div>
-            <center><b id="progress-text">0%</b></center>
-            <div style="background: linear-gradient(135deg, var(--rose), #ffdfdf); padding:18px; border-radius:20px; margin-top:15px; text-align:center;">
-                <small>剩餘 <span id="days-left">-</span> 天</small><br>
-                <span style="font-size:18px;">今日應存：<b id="daily-amt">RM 0.00</b></span>
-            </div>
-            <button class="btn-action" style="background:#eee; color:#999; margin-top:20px;" onclick="cancelChal()">結束挑戰並存檔</button>
-        </div>
-        <h3>🏆 挑戰歷史</h3>
-        <div id="chal-history-list"></div>
+
+  <!-- 挑戰頁 -->
+  <div id="p-chal" class="page">
+    <div class="card-white" id="chal-setup">
+      <h3 style="margin-top:0">🎯 開啟一周存錢挑戰</h3>
+      <input type="number" id="target-amt" placeholder="輸入本周目標金額 (RM)">
+      <div>每日大約需要存：<b id="daily-calc">RM 0.00</b></div>
+      <button class="btn-action" style="background:var(--serenity)" onclick="startChal()">挑戰開始 ⚔️</button>
     </div>
 
-    <!-- 記錄頁 -->
-    <div id="p-home" class="page" style="display:none">
-        <div class="card-white">
-            <h3>📊 月度報告</h3>
-            <div style="height:180px;"><canvas id="monthChart"></canvas></div>
-            <div id="month-summary" style="text-align:center; font-size:12px; margin-top:15px;"></div>
-        </div>
-        <h3>🌻 歷史記錄</h3>
-        <div id="list-render"></div>
+    <div class="card-white" id="chal-active" style="display:none">
+      <h3 style="margin:0">⚔️ 一周挑戰進行中</h3>
+      <div id="chal-dates" style="font-size:11px; color:#999; margin:5px 0;"></div>
+      <div class="progress-bg"><div id="progress-bar" class="progress-fill"></div></div>
+      <center><b id="progress-text">0%</b></center>
+      <div style="background: linear-gradient(135deg, var(--rose), #ffdfdf); padding:18px; border-radius:20px; margin-top:15px; text-align:center;">
+        <small>剩餘 <span id="days-left">-</span> 天</small><br>
+        <span style="font-size:18px;">今日應存：<b id="daily-amt">RM 0.00</b></span>
+      </div>
+      <button class="btn-action" style="background:#eee; color:#999; margin-top:20px;" onclick="cancelChal()">結束挑戰並存檔</button>
     </div>
 
-    <!-- 導出頁 -->
-    <div id="p-set" class="page" style="display:none">
-        <div class="card-white">
-            <h3>📤 導出專業報表</h3>
-            <select id="export-month-sel"></select>
-            <button class="btn-action" style="background:#81C784" onclick="doExport()">導出 Excel 📊</button>
-            <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
-            <button class="btn-action" style="background:#B0BEC5" onclick="document.getElementById('f-in').click()">📥 導入數據</button>
-            <input type="file" id="f-in" style="display:none" onchange="doImport(this)">
-            <button class="btn-action" style="background:var(--rose); margin-top:40px;" onclick="clearAll()">🗑️ 清空所有數據</button>
-        </div>
+    <h3 style="margin-left:5px;">🏆 挑戰榮譽榜</h3>
+    <div id="chal-history-list"></div>
+  </div>
+
+  <!-- 歷史頁 -->
+  <div id="p-home" class="page" style="display:none">
+    <div class="card-white">
+      <h3 style="margin:0 0 15px 0;">📊 月度報告</h3>
+      <div style="height:180px;"><canvas id="monthChart"></canvas></div>
+      <div id="month-summary" style="text-align:center; font-size:12px; margin-top:15px;"></div>
     </div>
+    <h3 style="margin-left:5px;">🌻 歷史記錄</h3>
+    <div id="list-render"></div>
+    <div>
+      <label>月份篩選</label>
+      <select id="month-filter" onchange="renderList()"></select>
+      <label>類型篩選</label>
+      <select id="type-filter" onchange="renderList()">
+        <option value="all">全部</option>
+        <option value="save">儲蓄</option>
+        <option value="spend">支出</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 導出頁 -->
+  <div id="p-set" class="page" style="display:none">
+    <div class="card-white">
+      <h3>📤 導出 / 導入 Excel</h3>
+      <select id="export-month-sel"></select>
+      <button class="btn-action" style="background:#81C784" onclick="doExport()">導出美化 Excel 📊</button>
+      <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
+      <button class="btn-action" style="background:#B0BEC5" onclick="document.getElementById('f-in').click()">📥 導入數據恢復</button>
+      <input type="file" id="f-in" style="display:none" onchange="doImport(this)">
+      <button class="btn-action" style="background:var(--rose); margin-top:40px;" onclick="clearAll()">🗑️ 清空所有數據</button>
+      <button class="btn-action" style="background:#546E7A; margin-top:20px;" onclick="toggleDark()">🌙 切換夜間模式</button>
+    </div>
+  </div>
 </div>
 
 <div class="add-btn" onclick="openAdd()">+</div>
 
 <div class="footer-nav">
-    <div class="nav-link active" onclick="navTo('chal', this)"><i>🏆</i>挑戰</div>
-    <div class="nav-link" onclick="navTo('home', this)"><i>🌻</i>記錄</div>
-    <div class="nav-link" onclick="navTo('set', this)"><i>⚙️</i>設置</div>
+  <div class="nav-link active" onclick="navTo('chal', this)"><i>🏆</i>挑戰</div>
+  <div class="nav-link" onclick="navTo('home', this)"><i>🌻</i>記錄</div>
+  <div class="nav-link" onclick="navTo('set', this)"><i>⚙️</i>設置</div>
 </div>
 
-<!-- modal 彈窗 -->
+<!-- Modal 新增/編輯 -->
 <div class="modal" id="modal-add">
-    <div class="modal-con">
-        <!-- 與你原本代碼一致的新增/編輯表單 -->
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <button id="ts" class="btn-action" style="background:var(--serenity); flex:1" onclick="setT('save')">儲蓄</button>
-            <button id="tp" class="btn-action" style="background:#eee; color:#999; flex:1" onclick="setT('spend')">支出</button>
-        </div>
-        <input type="date" id="f-date">
-        <small>項目類別</small><div id="bx-tag"></div>
-        <small>儲存賬戶</small><div id="bx-acc"></div>
-        <div id="row-spend" style="display:none">
-            <small>網購狀態</small><div id="bx-order"></div>
-            <small>購買來源</small><input type="text" id="f-source" placeholder="例如: Weverse / 淘寶">
-            <div style="display:flex; gap:8px;">
-                <input type="number" id="f-krw" placeholder="輸入韓元 ₩" style="flex:1">
-                <button onclick="convertKrw()" style="padding:10px; border-radius:12px; border:none; background:#eee; font-size:12px; cursor:pointer;">➔ RM</button>
-            </div>
-        </div>
-        <small>金額 (RM)</small><input type="number" id="f-amt" step="0.01">
-        <small>備註</small><input type="text" id="f-note" placeholder="備註或商品名稱">
-        <button class="btn-action" style="background:var(--serenity)" onclick="saveRec()">保存記錄 🛡️</button>
-        <button id="btn-del" class="btn-action" style="background:#EF5350; display:none" onclick="delRec()">🗑️ 刪除此條記錄</button>
-        <center><button onclick="closeAdd()" style="border:none;background:none;color:#999;padding:20px;">取消</button></center>
+  <div class="modal-con">
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+      <button id="ts" class="btn-action" style="background:var(--serenity); flex:1" onclick="setT('save')">儲蓄</button>
+      <button id="tp" class="btn-action" style="background:#eee; color:#999; flex:1" onclick="setT('spend')">支出</button>
     </div>
+    <input type="date" id="f-date">
+    <small>項目類別</small><div id="bx-tag"></div>
+    <small>儲存賬戶</small><div id="bx-acc"></div>
+    <div id="row-spend" style="display:none">
+      <small>網購狀態</small><div id="bx-order"></div>
+      <small>購買來源</small><input type="text" id="f-source" placeholder="例如: Weverse / 淘寶">
+      <div style="display:flex; gap:8px;">
+        <input type="number" id="f-krw" placeholder="輸入韓元 ₩" style="flex:1">
+        <button onclick="convertKrw()" style="padding:10px; border-radius:12px; border:none; background:#eee; font-size:12px; cursor:pointer;">➔ RM</button>
+      </div>
+    </div>
+    <small>金額 (RM)</small><input type="number" id="f-amt" step="0.01">
+    <small>備註</small><input type="text" id="f-note" placeholder="備註或商品名稱">
+    <button class="btn-action" style="background:var(--serenity)" onclick="saveRec()">保存記錄 🛡️</button>
+    <button id="btn-del" class="btn-action" style="background:#EF5350; display:none" onclick="delRec()">🗑️ 刪除此條記錄</button>
+    <center><button onclick="closeAdd()" style="border:none;background:none;color:#999;padding:20px;">取消</button></center>
+  </div>
 </div>
 
 <script>
-// 這裡保留你原本全部的 JS，包含:
-// - db 本地儲存
-// - 挑戰功能
-// - 歷史記錄
-// - 月度報表
-// - Excel 導入導出
-// - KRW 即時匯率
-// - 分頁導航
-// - modal 控制
-// 與你原本代碼完全一致
+// --- 資料庫 ---
+let db = JSON.parse(localStorage.getItem('dk_final_ultimate')) || { list: [], challenge: null, chalHistory: [] };
+const CFG = {
+  acc: ['RHB', 'HLB', 'TNG'],
+  save: ['⚔️ 碩珉存錢', '🧧 意外收入', '💰 工資'],
+  spend: ['💿 專輯', '✨ 小卡', '🎭 音樂劇', '🛍️ 同款', '📦 郵費', '🍱 飯錢'],
+  order: ['❌ 未付', '✅ 已付', '🚚 運送中', '📦 已收']
+};
+let curT='save', curTag='', curAcc='RHB', curOrder='✅ 已付', editIdx=-1, liveRate=310;
+let myChart = null;
+
+// --- 頁面導航 ---
+function navTo(id, el){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.getElementById('p-'+id).style.display='block';
+  document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(id==='chal'){ updateChalUI(); renderChalHistory(); }
+  if(id==='home'){ renderList(); initChart(); populateMonthExport(); }
+}
+
+// --- KRW 轉 RM ---
+function convertKrw(){
+  const krw=parseFloat(document.getElementById('f-krw').value);
+  if(!krw) return;
+  document.getElementById('f-amt').value=(krw/liveRate).toFixed(2);
+}
+
+// --- 一周挑戰 ---
+function startChal(){
+  const amt=parseFloat(document.getElementById('target-amt').value);
+  if(!amt) return alert("請輸入目標金額");
+  const start=new Date();
+  const end=new Date(); end.setDate(start.getDate()+6);
+  db.challenge={ target: amt, start: start.toISOString().slice(0,10), end: end.toISOString().slice(0,10) };
+  save(); updateChalUI();
+}
+function cancelChal(){
+  if(!db.challenge) return;
+  const c=db.challenge;
+  const saved=db.list.filter(i=>i.type==='save'&&i.date>=c.start&&i.date<=c.end).reduce((a,b)=>a+b.amt,0);
+  const perc=((saved/c.target)*100).toFixed(1);
+  db.chalHistory.unshift({ ...c, saved, perc });
+  db.challenge=null;
+  save(); updateChalUI(); renderChalHistory();
+}
+function updateChalUI(){
+  const setup=document.getElementById('chal-setup');
+  const active=document.getElementById('chal-active');
+  if(!db.challenge){ setup.style.display='block'; active.style.display='none'; document.getElementById('daily-calc').innerText='RM 0.00'; return; }
+  setup.style.display='none'; active.style.display='block';
+  const c=db.challenge; const today=new Date(); today.setHours(0,0,0,0);
+  const diff=Math.ceil((new Date(c.end)-today)/(1000*60*60*24))+1; const daysLeft=Math.max(0,diff);
+  const saved=db.list.filter(i=>i.type==='save'&&i.date>=c.start&&i.date<=c.end).reduce((a,b)=>a+b.amt,0);
+  const perc=Math.min((saved/c.target)*100,100);
+  document.getElementById('chal-dates').innerText=`${c.start} ~ ${c.end}`;
+  document.getElementById('progress-bar').style.width=perc+'%';
+  document.getElementById('progress-text').innerText=`${perc.toFixed(1)}% (RM ${saved.toFixed(2)} / ${c.target})`;
+  document.getElementById('days-left').innerText=daysLeft;
+  const daily=(daysLeft>0)?Math.max(c.target-saved,0)/daysLeft:0;
+  document.getElementById('daily-amt').innerText=`RM ${daily.toFixed(2)}`;
+  document.getElementById('daily-calc').innerText=`RM ${daily.toFixed(2)}`;
+}
+function renderChalHistory(){
+  const html=db.chalHistory.map(c=>`<div class="item-card is-spend">
+  ${c.start} ~ ${c.end} 目標:RM${c.target} / 存入:${c.saved} (${c.perc}%)</div>`).join('');
+  document.getElementById('chal-history-list').innerHTML=html;
+}
+
+// --- 記錄列表 ---
+function openAdd(){
+  document.getElementById('modal-add').style.display='block';
+  document.getElementById('btn-del').style.display=(editIdx>=0)?'block':'none';
+  const d=new Date().toISOString().slice(0,10);
+  document.getElementById('f-date').value=d;
+  populateTags(); populateAcc(); populateOrder();
+}
+function closeAdd(){ document.getElementById('modal-add').style.display='none'; editIdx=-1; }
+function setT(t){ curT=t; document.getElementById('ts').style.background=(t==='save')? 'var(--serenity)':'#eee'; document.getElementById('ts').style.color=(t==='save')? '#fff':'#999';
+  document.getElementById('tp').style.background=(t==='spend')? 'var(--rose)':'#eee'; document.getElementById('tp').style.color=(t==='spend')? '#fff':'#999';
+  document.getElementById('row-spend').style.display=(t==='spend')?'block':'none';
+}
+function populateTags(){ const bx=document.getElementById('bx-tag'); bx.innerHTML=''; const arr=CFG[curT]; arr.forEach(t=>{ const el=document.createElement('span'); el.className='tag'; el.innerText=t; el.onclick=()=>{ curTag=t; bx.querySelectorAll('.tag').forEach(x=>x.classList.remove('sel-s','sel-p')); el.classList.add(curT==='save'?'sel-s':'sel-p'); }; bx.appendChild(el); }); }
+function populateAcc(){ const bx=document.getElementById('bx-acc'); bx.innerHTML=''; CFG.acc.forEach(a=>{ const el=document.createElement('span'); el.className='tag'; el.innerText=a; el.onclick=()=>{ curAcc=a; bx.querySelectorAll('.tag').forEach(x=>x.classList.remove('sel-s','sel-p')); el.classList.add('sel-s'); }; bx.appendChild(el); }); }
+function populateOrder(){ const bx=document.getElementById('bx-order'); bx.innerHTML=''; CFG.order.forEach(o=>{ const el=document.createElement('span'); el.className='tag'; el.innerText=o; el.onclick=()=>{ curOrder=o; bx.querySelectorAll('.tag').forEach(x=>x.classList.remove('sel-s','sel-p')); el.classList.add('sel-p'); }; bx.appendChild(el); }); }
+function saveRec(){
+  const d=document.getElementById('f-date').value, amt=parseFloat(document.getElementById('f-amt').value)||0, note=document.getElementById('f-note').value;
+  if(!amt) return alert("請輸入金額");
+  if(editIdx>=0) db.list[editIdx]={ date:d, amt, note, type:curT, tag:curTag, acc:curAcc, order:curOrder };
+  else db.list.push({ date:d, amt, note, type:curT, tag:curTag, acc:curAcc, order:curOrder });
+  save(); closeAdd(); renderList(); updateChalUI(); initChart();
+}
+function delRec(){ if(editIdx<0) return; db.list.splice(editIdx,1); save(); closeAdd(); renderList(); initChart(); updateChalUI(); }
+function renderList(){
+  const selM=document.getElementById('month-filter').value, selT=document.getElementById('type-filter').value;
+  const monthSet=new Set(db.list.map(i=>i.date.slice(0,7))); const monthS=[...monthSet].sort().reverse();
+  const msel=document.getElementById('month-filter'); msel.innerHTML=''; monthS.forEach(m=>{ const op=document.createElement('option'); op.value=m; op.innerText=m; msel.appendChild(op); });
+  const list=db.list.filter(i=> (selM==='all'||i.date.slice(0,7)===selM) && (selT==='all'||i.type===selT));
+  const box=document.getElementById('list-render'); box.innerHTML='';
+  list.forEach((i,idx)=>{ const div=document.createElement('div'); div.className='item-card '+(i.type==='spend'?'is-spend':''); div.innerHTML=`${i.date} ${i.tag || ''} RM${i.amt} ${i.note || ''}`; div.onclick=()=>{ editIdx=idx; curT=i.type; openAdd(); }; box.appendChild(div); });
+}
+
+// --- Excel 導出/導入 ---
+function populateMonthExport(){
+  const sel=document.getElementById('export-month-sel'); const monthSet=new Set(db.list.map(i=>i.date.slice(0,7))); sel.innerHTML=''; [...monthSet].sort().reverse().forEach(m=>{ const op=document.createElement('option'); op.value=m; op.innerText=m; sel.appendChild(op); });
+}
+function doExport(){
+  const m=document.getElementById('export-month-sel').value; if(!m) return alert('選擇月份');
+  const list=db.list.filter(i=>i.date.slice(0,7)===m);
+  const ws=XLSX.utils.json_to_sheet(list);
+  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, m);
+  XLSX.writeFile(wb, `理財_${m}.xlsx`);
+}
+function doImport(inp){
+  const f=inp.files[0]; const r=new FileReader();
+  r.onload=function(e){ const data=new Uint8Array(e.target.result); const wb=XLSX.read(data,{type:'array'}); wb.SheetNames.forEach(sn=>{ const arr=XLSX.utils.sheet_to_json(wb.Sheets[sn]); arr.forEach(a=>db.list.push(a)); }); save(); renderList(); initChart(); updateChalUI(); }; r.readAsArrayBuffer(f);
+}
+
+// --- 月度圖表 ---
+function initChart(){
+  const ctx=document.getElementById('monthChart'); if(!ctx) return;
+  const monSel=document.getElementById('month-filter').value || new Date().toISOString().slice(0,7);
+  const mons=db.list.filter(i=>i.date.slice(0,7)===monSel);
+  const data={ labels:['儲蓄','支出'], datasets:[{ data:[0,0], backgroundColor:['#92A8D1','#F7CAC9'] }]};
+  mons.forEach(i=>{ if(i.type==='save') data.datasets[0].data[0]+=i.amt; else data.datasets[0].data[1]+=i.amt; });
+  if(myChart) myChart.destroy();
+  myChart=new Chart(ctx,{ type:'pie', data:data });
+  const sumS=data.datasets[0].data[0], sumP=data.datasets[0].data[1];
+  document.getElementById('month-summary').innerText=`儲蓄: RM${sumS.toFixed(2)} | 支出: RM${sumP.toFixed(2)}`;
+}
+
+// --- 儲存 ---
+function save(){ localStorage.setItem('dk_final_ultimate',JSON.stringify(db)); }
+
+// --- 清空 ---
+function clearAll(){ if(confirm('確認清空所有數據?')){ db={ list: [], challenge: null, chalHistory: [] }; save(); renderList(); renderChalHistory(); updateChalUI(); initChart(); } }
+
+// --- 夜間 ---
+function toggleDark(){ document.body.classList.toggle('dark'); }
+
+// --- 匯率 (模擬 / 可改 web API) ---
+function updateRate(){ fetch('https://api.exchangerate.host/latest?base=MYR&symbols=KRW').then(r=>r.json()).then(d=>{ liveRate=d.rates.KRW; document.getElementById('rate-display').innerText=`1 RM = ${liveRate.toFixed(2)} ₩`; }); }
+updateRate(); setInterval(updateRate, 300000);
+
+// --- 初始 ---
+navTo('chal');
 </script>
 </body>
 </html>
